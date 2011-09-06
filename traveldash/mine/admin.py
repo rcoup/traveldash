@@ -13,8 +13,8 @@ class DashboardRouteInline(admin.StackedInline):
     def next(self, obj):
         now = datetime.now()
         msg = []
-        for trip, dep, arr in obj.next_with_times(now, count=5):
-            td = dep - now
+        for trip, departing, service_date in obj.next(now, count=5):
+            td = departing - now
             h = "%dh " % (td.seconds / 3600) if (td.seconds > 3600) else ""
             m = "%dm" % (td.seconds % 3600 / 60)
             msg.append(u"%s in %s%s" % (trip.route.short_name, h, m))

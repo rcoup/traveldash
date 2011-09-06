@@ -294,7 +294,7 @@ class TripManager(models.Manager):
     def between_stops(self, from_stop, to_stop):
         """ Return all the Trips running between the specified stops """
         qs = self.get_query_set().filter(stop_times__stop=from_stop, stop_times__pickup_type=StopTime.PICKUP)
-        qs = qs.filter(stop_times__stop=to_stop, stop_times__dropoff_type=StopTime.DROPOFF)
+        qs = qs.filter(stop_times__stop=to_stop, stop_times__drop_off_type=StopTime.DROPOFF)
         return qs.distinct()
     
     def for_dates(self, *dates):

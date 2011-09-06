@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime, date
 
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Min
 
 from traveldash.gtfs.models import Route, Trip, StopTime
 
@@ -21,7 +21,7 @@ class Dashboard(models.Model):
 
         next = []
         for route in self.routes.all():
-            for trip, dep, arr in route.next_with_times(start_time, count):
+            for trip, dep, arr in route.next_with_arrivals(start_time, count):
                 next.append((route, trip, dep, arr))
         
         return sorted(next, key=lambda x: x[2]-timedelta(seconds=x[0].walk_time_start))[:count]
@@ -55,34 +55,21 @@ class DashboardRoute(models.Model):
         tomorrow = today + timedelta(days=1)
         dt = departure.time()
         dt_int = dt.hour * 3600 + dt.minute * 60 + dt.second
+        
+        qs = StopTime.objects.filter(trip__route__in=self.routes.all(), stop=self.from_stop, pickup_type=StopTime.PICKUP)
+        qs = qs.filter(Q(trip__service__all_dates__date=today, departure_time__gte=dt_int)
+                       | Q(trip__service__all_dates__date=tomorrow))
+        qs = qs.select_related('trip').annotate(service_date=Min('trip__service__all_dates__date'))
+        qs = qs.order_by('trip__service__all_dates__date', 'departure_days', 'departure_time')[:count]
 
-        qs = Trip.objects.filter(route__in=self.routes.all())
-        qs = qs.filter(stop_times__stop=self.from_stop, stop_times__pickup_type=StopTime.PICKUP)
-        
-        qs = qs.filter(Q(service__all_dates__date=today, stop_times__departure_time__gte=dt_int)
-                       | Q(service__all_dates__date=tomorrow))
-        
-        qs = qs.distinct().order_by('stop_times__departure_days', 'stop_times__departure_time')
-        return qs[:count]
+        for stop_time in qs:
+            yield (stop_time.trip, stop_time.departing(stop_time.service_date), stop_time.service_date)
     
-    def next_with_times(self, start_time=None, count=10):
+    def next_with_arrivals(self, start_time=None, count=10):
         if start_time is None:
             start_time = datetime.now()
 
-        departure = start_time + timedelta(seconds=self.walk_time_start)
-        today = departure.date()
-        tomorrow = today + timedelta(days=1)
-
-        for trip in self.next(start_time, count):
-            dep_st = trip.stop_times.filter(stop=self.from_stop, pickup_type=StopTime.PICKUP)[0]
-
-            dep = dep_st.departing(today)
-            if dep < departure:
-                dep = dep_st.departing(tomorrow)
-            
+        for trip, departing, service_date in self.next(start_time, count):
             arr_st = trip.stop_times.filter(stop=self.to_stop, drop_off_type=StopTime.DROPOFF)[0]
-            arr = arr_st.arriving(today)
-            if arr < dep:
-                arr = arr_st.arriving(tomorrow)
-            
-            yield (trip, dep, arr)
+            arr = arr_st.arriving(service_date)
+            yield (trip, departing, arr)
