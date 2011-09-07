@@ -2,6 +2,8 @@ from datetime import timedelta, datetime, date
 
 from django.db import models
 from django.db.models import Q, Min
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from traveldash.gtfs.models import Route, Trip, StopTime
 
@@ -36,13 +38,12 @@ class DashboardRoute(models.Model):
     walk_time_end = models.IntegerField(default=0, help_text='Walk time at the end of the route (secs)')
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def save(self, *args, **kwargs):
-        if self.from_stop and self.to_stop:
-            self.routes = Route.objects.between_stops(self.from_stop, self.to_stop)
-        return super(DashboardRoute, self).save(*args, **kwargs)
-
     def __unicode__(self):
         return unicode(self.name)
+
+    @classmethod
+    def update_routes(cls, sender, instance, **kwargs):
+        instance.routes = Route.objects.between_stops(instance.from_stop, instance.to_stop)
 
     def next(self, start_time=None, count=10):
         """ Get the next Trips departing for this route """
@@ -73,3 +74,6 @@ class DashboardRoute(models.Model):
             arr_st = trip.stop_times.filter(stop=self.to_stop, drop_off_type=StopTime.DROPOFF)[0]
             arr = arr_st.arriving(service_date)
             yield (trip, departing, arr)
+
+post_save.connect(DashboardRoute.update_routes, sender=DashboardRoute)
+
