@@ -1,0 +1,59 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>{% block title %}{{title}}{% endblock title %}</title>
+  <meta name="description" content="{% block description %}{% endblock description %}">
+  <meta name="author" content="Robert Coup @amatix">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <link rel="stylesheet" href="{{STATIC_URL}}css/style.css">
+
+  <script src="{{STATIC_URL}}js/libs/modernizr-2.0.6.min.js"></script>
+  
+  {% block extrahead %}{% endblock extrahead %}
+</head>
+
+<body>
+  <div id="container">
+    <header>
+{% block header %}{% endblock header %}
+    </header>
+    <div id="main" role="main">
+{% block main %}{% endblock main %}
+    </div>
+    <footer>
+{% block footer %}{% endblock footer %}
+    </footer>
+  </div>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="{{STATIC_URL}}js/libs/jquery-1.6.2.min.js"><\/script>')</script>
+
+  <script defer src="{{STATIC_URL}}js/plugins.js"></script>
+  <script defer src="{{STATIC_URL}}js/script.js"></script>
+
+  {% comment %}
+  <!-- Change UA-XXXXX-X to be your site's ID -->
+  <script>
+    window._gaq = [['_setAccount','UAXXXXXXXX1'],['_trackPageview'],['_trackPageLoadTime']];
+    Modernizr.load({
+      load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
+    });
+  </script>
+  {% endcomment %}
+
+  <!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+  <![endif]-->
+  
+  {% block extrabody %}{% endblock extrabody %}
+</body>
+</html>
