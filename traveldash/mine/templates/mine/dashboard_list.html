@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block htmlclass%}{{super}} dashboard_list{% endblock %}
+{% block title %}My Dashboards{% endblock %}
+
+{% block header %}
+    <h1>My Dashboards</h1>
+{% endblock %}
+
+{% block main %}
+    <table>
+        {% for dashboard in dashboard_list %}
+            <tr>
+                <th>{{ dashboard.name }}</th>
+                <td><a class="viewLink" href="{{ dashboard.get_absolute_url }}">View</a></td>
+                <td><a class="editLink" href="{{ dashboard.get_edit_url }}">Edit</a></td>
+                <td class="copyLink">Link: <a href="{{base_url}}{{dashboard.get_absolute_url}}">{{base_url}}{{dashboard.get_absolute_url}}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    <p><a href="{% url traveldash.mine.views.dashboard_create %}">Create a New Dashboard</a></p>
+{% endblock %}

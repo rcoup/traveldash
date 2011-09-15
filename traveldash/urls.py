@@ -5,7 +5,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^mine/', include('traveldash.mine.urls')),
+    (r'', include('traveldash.mine.urls')),
 
     (r'^social/', include('socialregistration.urls')),
 
@@ -13,3 +13,4 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
 )
 urlpatterns += staticfiles_urlpatterns()
+

@@ -27,7 +27,6 @@ class DashboardAdmin(admin.ModelAdmin):
     search_fields = ('user__first_name', 'user__last_name', 'user__email', 'name',)
     list_filter = ('created_at',)
     raw_id_fields = ('user',)
-    prepopulated_fields = {"slug": ("name",)}
     readonly_fields = ('next',)
     inlines = (
         DashboardRouteInline,

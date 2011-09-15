@@ -197,6 +197,18 @@ class Agency(models.Model, GTFSModel):
     def __unicode__(self):
         return unicode(self.name)
 
+class StopManager(models.GeoManager):
+    def write_fusion_tables_csv(self, filename):
+        with open(filename, 'wb') as f:
+            w = csv.writer(f)
+            w.writerow(('id', 'name', 'location'))
+            for stop in Stop.objects.all().only('id', 'name', 'location'):
+                w.writerow((
+                    stop.id,
+                    stop.name.encode('utf8'),
+                    '%0.5f %0.5f' % (stop.location.y, stop.location.x),
+                ))
+
 class Stop(models.Model, GTFSModel):
     LOCATION_TYPES = (
         (0, "Stop"),
@@ -213,7 +225,7 @@ class Stop(models.Model, GTFSModel):
     location_type = models.IntegerField(choices=LOCATION_TYPES, default=0, db_index=True)
     parent_station = models.ForeignKey('self', null=True, related_name='child_stops')
 
-    objects = models.GeoManager()
+    objects = StopManager()
 
     class Meta:
         unique_together = (("source", "stop_id"))

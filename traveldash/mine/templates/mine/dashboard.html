@@ -1,77 +1,40 @@
 {% extends "base.html" %}
 
+{% block htmlclass%}{{block.super}} dashboard{% endblock %}
+{% block title %}{{dashboard.name}}{% endblock %}
+
 {% block extrahead %}
-    <style type="text/css">
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow-y: hidden;
-        }
-        #container {
-            height: 100%;
-        }
-        #header {
-            height: 15%;
-        }
-        #main {
-            height: 85%;
-        }
-        
-        #schedule {
-            height: 100%;
-            width: 100%;
-            font-size: 200%;
-        }
-        #schedule tr {
-            height: 10%;
-        }
-        #schedule td,
-        #schedule th{
-            vertical-align: middle;
-        }
-        
-        .trip {
-            padding-left: 40px;
-            background-size: auto 80%;
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-        .routeType2 {
-            background-image: url("/static/img/routeType2.svg");
-        }
-        .routeType3 {
-            background-image: url("/static/img/routeType3.svg");
-        }
-        .routeType4 {
-            background-image: url("/static/img/routeType4.svg");
-        }
-    </style>
+{{ block.super }}
 {% endblock %}
 
 {% block header %}
+    {% if request.user == dashboard.user %}
+    <div class="editLinks">
+        <a href="{% url traveldash.mine.views.dashboard_edit dashboard.pk %}">Edit</a>
+        <br/>
+        <a href="{% url traveldash.mine.views.dashboard_list %}">My Dashboards</a>
+    </div>
+    {% endif %}
+
     <h1>{{ dashboard.name }}</h1>
-{% endblock header %}
+    
+{% endblock %}
 
 {% block main %}
-    <table id="schedule">
-        <tbody>
-        {% for route,trip,dep,arr in dashboard.next %}
-            <tr>
-                <th class="trip routeType{{ trip.route.route_type }}" title="{{ trip.route.get_route_type_display }}">&nbsp;</th>
-                <th>
-                    {{ trip.route.short_name }}
-                </th>
-                <td>
-                    {{ trip.route.long_name }}
-                </td>
-                <td title="departs at {{ arr|time:"f a" }} from {{ route.from_stop.name }}">
-                    {{ dep|timeuntil }}
-                </td>
-                <td title="arrives at {{ route.to_stop.name }}">
-                    {{ arr|time:"f a" }}
-                </td>
-            </tr>
-        {% endfor %}
-        <tbody>
+    <table>
+        <thead>
+            <th class="mode">&nbsp;</th>
+            <th class="code">&nbsp;</th>
+            <th class="name">Route</th>
+            <th class="departs">Departs in</th>
+            <th class="arrives">ETA</th>
+        </thead>
+        <tbody id="schedule"><tbody>
     </table>
-{% endblock main %}
+{% endblock %}
+
+{% block extrabody %}
+{{ block.super }}
+<script type="text/javascript" src="{{STATIC_URL}}js/libs/datejs.min.js" async="true"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/dashboard.js" async="true"></script>
+{% endblock %}

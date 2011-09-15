@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block htmlclass%}{{super}} dashboard_form{% endblock %}
+
+{% block extrahead %}
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+{% endblock %}
+
+{% block extrabody %}
+{{ block.super }}
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;region=NZ"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/dashboard_form.js"></script>
+{% endblock %}
+
+{% block main %}
+    {% if dashboard %}
+    <p class="editLinks">
+        <a href="{{ dashboard.get_absolute_url }}">View Dashboard</a>
+        -
+        <a href="{% url dashboard-delete dashboard.pk %}">Delete this Dashboard</a>
+    </p>
+    {% endif %}
+
+    <div id="mapContainer"><div id="map"></div></div>
+
+    <form method="post" action="">
+        <p class="submit"><button type="submit">Save</button></p>
+
+        {% csrf_token %}
+
+        <div class="dashboardForm">
+        {{ form.as_p }}
+        </div>
+
+        {{ route_formset.management_form }}
+
+        {% for routeform in route_formset.forms %}
+        <div class="routeForm">
+            {% if not forloop.first %}
+            <p class="another">Add another route if you need to...</p>
+            {% endif %}
+            {{ routeform.as_p }}
+        </div>
+        {% endfor %}
+
+        <p class="submit"><button type="submit">Save</button></p>
+    </form>
+    <div class="clear" ></div>
+{% endblock %}

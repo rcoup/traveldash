@@ -1,0 +1,346 @@
+/* Welcome to Compass.
+ * In this file you should write your main styles. (or centralize your imports)
+ * Import this file using the following HTML or equivalent:
+ * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
+
+@import "compass/reset";
+@import "compass/layout/stretching";
+@import "compass/utilities";
+@import "compass/css3";
+@import "compass/typography/links/link-colors";
+@import "compass/typography/text/ellipsis";
+@import "compass/css3/box-shadow";
+
+$color-a: #4d4d22;
+$color-b: #79793e;
+$color-c: #3f3f15;
+$color-text-a: white;
+$color-text-b: lighten($color-c, 30%);
+$color-bg: #101010;
+$fonts: 'Gill Sans', 'Gill Sans MT', sans-serif;
+
+html, body {
+ background-color: $color-bg;
+ color: $color-text-a;
+ font-family: $fonts;
+ font-size: 120%;
+ width: 100%;
+}
+a {
+ @include link-colors($color-text-b, $color-text-a);
+}
+
+.panel {
+  border: 3px solid $color-c;
+  @include border-radius(8px);
+  display: block;
+  background-color: $color-a;
+  vertical-align: middle;
+  padding: 0.5em;
+}
+
+abbr
+{
+  border-bottom: 1px dotted $color-text-b;
+}
+
+.tooltip
+{
+  position: absolute;
+  background-color: black;
+  color: white;
+  font-size: 60%;
+  max-width: 10em;
+  line-height: 1.2em;
+  padding: 0.3em;
+  z-index: 100;
+  @include border-radius(2px);
+}
+
+h1 {
+  text-align: center;
+  font-size: 200%;
+  font-weight: bold;
+}
+
+header {
+  position: relative;
+  width: 100%;
+
+  #header {
+    @extend .panel;
+    margin: 1em 1em 0.5em 1em;
+  }
+}
+#container {
+  position: relative;
+  width: 100%;
+}
+#main {
+  @extend .panel;
+  margin: 0.5em 1em 1em 1em;
+}
+
+.messages {
+  background-color: $color-b;
+  list-style-type: circle;
+  font-size: 80%;
+  padding: 0.5em 1em 0.5em 2em;
+  margin: 1em 0;
+  @include border-radius(4px);
+}
+.errorlist {
+  background-color: $color-b;
+  list-style-type: circle;
+  font-size: 80%;
+  padding: 0.5em 1em 0.5em 2em;
+  margin: 1em 0;
+  @include border-radius(4px);
+}
+
+.dashboard {
+  html, body {
+   height: 100%;
+  }
+  header {
+    height: 4em;
+
+    .editLinks {
+      text-align: right;
+      float: right;
+      vertical-align: middle;
+      font-size: 80%;
+    }
+  }
+
+  table {
+    width: 100%;
+    text-align: center;
+    
+    thead {
+      color: $color-text-b;
+      th {
+        padding: 0 0 0.5em 1em;
+      }
+    }
+    
+    tbody {
+      font-size: 120%;
+      tr {
+        line-height: 1em;
+      }
+      td, th {
+        vertical-align: top;
+        padding: 0.5em 0;
+        border-top: 1px solid $color-c;
+      }
+    }
+
+    .mode {
+      background-size: auto 1.5em;
+      background-repeat: no-repeat;
+      background-position: center 0.5em;
+    }
+    .mode abbr {
+      min-width: 2em;
+      @include inline-block;
+      border-bottom: none;
+    }
+    .routeType2 {
+      background-image: url("/static/img/routeType2.svg");
+    }
+    .routeType3 {
+      background-image: url("/static/img/routeType3.svg");
+    }
+    .routeType4 {
+      background-image: url("/static/img/routeType4.svg");
+    }
+    
+    .code {
+      min-width: 2em;
+    }
+    .arrives {
+      min-width: 5em;
+    }
+    .departs {
+      min-width: 6em;
+    }
+  }
+}
+
+.dashboard_list {
+  #main table {
+    width: 100%;
+    margin-bottom: 1em;
+   
+    tr{
+     line-height: 1.5em;
+    }
+    
+    .copyLink {
+     font-size: 80%;
+    }
+  }
+}
+
+.dashboard_form {
+  #main .editLinks {
+    margin-bottom: 1em;
+  }
+
+  form {
+    max-width: 45%;
+    font-size: 80%;
+ 
+    p {
+      clear: left;
+      padding-top: 1em;
+    }
+    p.submit {
+      clear: left;
+      margin-top: 1em;
+      background-color: $color-b;
+      vertical-align: middle;
+      text-align: center;
+      @include border-radius(4px);
+      padding: 0.5em;
+      button {
+        margin: 0;
+        padding-left: 1em;
+        padding-right: 1em;
+      }
+    }
+    
+    label {
+      float: left;
+      width: 55%;
+    }
+    input, .mapSelect {
+      float: left;
+    }
+    input, button {
+      font-size: 90%;
+      font-family: $fonts;
+      padding: 0.2em;
+      margin-top: -0.3em;
+    }
+    input {
+      border: 1px solid black;
+    }
+    .mapSelect {
+      max-width: 45%;
+      span {
+        color: $color-text-b;
+      }
+    }
+
+    .helptext {
+      clear: left;
+      display: block;
+      font-size: 80%;
+      color: $color-text-b;
+      text-align: right;
+      margin-right: 2em;
+    }
+    
+    .routeForm {
+      clear: left;
+      border-top: 2px solid $color-c;
+      margin-top: 2em 0;
+      padding-bottom: 2em;
+    }
+    
+    .dashboardForm {
+      clear: left;
+      padding-bottom: 3em;
+    }
+    
+    .another {
+      color: $color-text-b;
+    }
+  }
+
+  #mapContainer {
+    float: right;
+    width: 50%;
+    height: 400px;
+    background-color: $color-b;
+
+    #map {
+      width: 100%;
+      height: 100%;
+      color: black;
+    }
+  }
+}
+
+.home {
+  font-size: 100%;
+  width: 100%;
+
+  h2, h3 {
+   text-align: center;
+   padding-bottom: 0.8em;
+   font-weight: bold;
+  }
+  
+  header {
+    padding: 1em 0;
+    
+    h1 {
+      color: $color-text-b;
+    }
+  }
+
+  .user {
+    margin: 1em 0;
+  }
+
+  #home {
+    width: 940px;
+    margin: 0 auto;
+    text-align: center;
+
+   .panel3 {
+     @extend .panel;
+     margin: 10px;
+     float: left;
+     width: 260px;
+     height: 10em;
+     text-align: left;
+     
+     p {
+       margin-bottom: 0.5em;
+     }
+     
+     ul {
+       list-style-type: circle;
+       margin-left: 30px;
+     }
+   }
+  }
+  
+  #example iframe {
+    width: 100%;
+    font-size: 50%;
+  }
+
+}
+
+.login {
+  #main {
+    text-align: center;
+    
+    ul {
+      margin: 1em auto;
+    
+      li {
+        display: inline;
+        padding: 2em;
+        form {
+          @include inline-block;
+        }
+      }
+    }
+  }
+}
