@@ -10,6 +10,7 @@
 {{ block.super }}
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;region=NZ"></script>
 <script type="text/javascript" src="{{STATIC_URL}}js/dashboard_form.js"></script>
+<script type="text/javascript">td.stopfusionTableId = {{ stopFusionTableId }};</script>
 {% endblock %}
 
 {% block main %}

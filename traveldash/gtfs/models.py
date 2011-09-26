@@ -202,12 +202,16 @@ class StopManager(models.GeoManager):
         with open(filename, 'wb') as f:
             w = csv.writer(f)
             w.writerow(('id', 'name', 'location'))
-            for stop in Stop.objects.all().only('id', 'name', 'location'):
-                w.writerow((
-                    stop.id,
-                    stop.name.encode('utf8'),
-                    '%0.5f %0.5f' % (stop.location.y, stop.location.x),
-                ))
+            map(w.writerow, self.get_fusion_tables_rows())
+
+    def get_fusion_tables_rows(self):
+        """ Generator for id,name,location rows for Google Fusion Tables"""
+        for stop in Stop.objects.all().only('id', 'name', 'location'):
+            yield (
+                stop.id,
+                stop.name.encode('utf8'),
+                '%0.5f %0.5f' % (stop.location.y, stop.location.x),
+            )
 
 class Stop(models.Model, GTFSModel):
     LOCATION_TYPES = (

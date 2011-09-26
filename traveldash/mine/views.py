@@ -11,6 +11,7 @@ from django.contrib import messages
 from django import forms
 from django.forms.models import inlineformset_factory
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from traveldash.mine.models import Dashboard, DashboardRoute
 from traveldash.gtfs.models import Route
@@ -61,9 +62,11 @@ class RouteForm(forms.ModelForm):
         }
     
     def clean(self):
-        if not Route.objects.between_stops(self.cleaned_data['from_stop'], self.cleaned_data['to_stop']).count():
-            raise forms.ValidationError("No Transport routes between the stops you've selected")
-        return self.cleaned_data
+        cd = self.cleaned_data
+        if ('from_stop' in cd) and ('to_stop' in cd):
+            if not Route.objects.between_stops(cd['from_stop'], cd['to_stop']).count():
+                raise forms.ValidationError("No Transport routes between the stops you've selected")
+        return cd
 
 RouteFormSet = inlineformset_factory(Dashboard, DashboardRoute, form=RouteForm, extra=1)
 
@@ -90,7 +93,7 @@ def dashboard_create(request):
     else:
         form = DashboardForm()
         route_formset = RouteFormSet(instance=Dashboard())
-    return TemplateResponse(request, "mine/dashboard_form.html", {'form': form, 'route_formset': route_formset, 'title':'New Dashboard'})
+    return TemplateResponse(request, "mine/dashboard_form.html", {'form': form, 'route_formset': route_formset, 'title':'New Dashboard', 'stopFusionTableId': settings.GTFS_STOP_FUSION_TABLE_ID})
 
 @login_required
 def dashboard_edit(request, pk):
@@ -118,7 +121,7 @@ def dashboard_edit(request, pk):
     else:
         form = DashboardForm(instance=dashboard)
         route_formset = RouteFormSet(instance=dashboard)
-    return TemplateResponse(request, "mine/dashboard_form.html", {'form': form, 'route_formset': route_formset, 'title':'Edit Dashboard', 'dashboard': dashboard})
+    return TemplateResponse(request, "mine/dashboard_form.html", {'form': form, 'route_formset': route_formset, 'title':'Edit Dashboard', 'dashboard': dashboard, 'stopFusionTableId': settings.GTFS_STOP_FUSION_TABLE_ID})
 
 class DashboardDelete(DeleteView):
     context_object_name="dashboard"
