@@ -2,10 +2,10 @@ from datetime import timedelta, datetime, date
 
 from django.db import models
 from django.db.models import Q, Min
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
-from traveldash.gtfs.models import Route, Trip, StopTime
+from traveldash.gtfs.models import Route, Trip, StopTime, Stop
 
 class Dashboard(models.Model):
     user = models.ForeignKey('auth.User')
@@ -65,22 +65,50 @@ class Dashboard(models.Model):
             })
         return c
 
+class DashboardRouteManager(models.Manager):
+    def unlink_stops(self):
+        for dr in DashboardRoute.objects.all():
+            dr.from_stop = None
+            dr.to_stop = None
+            dr.save()
+
+    def relink_stops(self):
+        for dr in DashboardRoute.objects.all():
+            dr.from_stop = Stop.objects.get(code=dr.from_stop_code)
+            dr.to_stop = Stop.objects.get(code=dr.to_stop_code)
+            dr.save()
+
 class DashboardRoute(models.Model):
     dashboard = models.ForeignKey(Dashboard, related_name='routes')
     name = models.CharField(max_length=50, blank=True)
-    from_stop = models.ForeignKey('gtfs.Stop', verbose_name='Which stop do you leave from?', related_name='dashboard_routes_start')
-    to_stop = models.ForeignKey('gtfs.Stop', verbose_name='Which stop do you go to?', related_name='dashboard_routes_end')
+    from_stop_code = models.CharField(max_length=20, editable=False)
+    from_stop = models.ForeignKey('gtfs.Stop', verbose_name='Which stop do you leave from?', related_name='dashboard_routes_start', null=True)
+    to_stop_code = models.CharField(max_length=20, editable=False)
+    to_stop = models.ForeignKey('gtfs.Stop', verbose_name='Which stop do you go to?', related_name='dashboard_routes_end', null=True)
     routes = models.ManyToManyField('gtfs.Route')
     walk_time_start = models.PositiveIntegerField('How long to walk there?', default=0, help_text='minutes')
     walk_time_end = models.PositiveIntegerField('How long to walk from there?', default=0, help_text='minutes')
     created_at = models.DateTimeField(auto_now_add=True)
 
+    objects = DashboardRouteManager()
+
     def __unicode__(self):
         return unicode(self.name)
 
     @classmethod
+    def update_stops(cls, sender, instance, **kwargs):
+        if instance.from_stop:
+            instance.from_stop_code = instance.from_stop.code
+
+        if instance.to_stop:
+            instance.to_stop_code = instance.to_stop.code
+
+    @classmethod
     def update_routes(cls, sender, instance, **kwargs):
-        instance.routes = Route.objects.between_stops(instance.from_stop, instance.to_stop)
+        if instance.from_stop and instance.to_stop:
+            instance.routes = Route.objects.between_stops(instance.from_stop, instance.to_stop)
+        else:
+            instance.routes.clear()
 
     def next(self, start_time=None, count=10):
         """ Get the next Trips departing for this route """
@@ -128,5 +156,6 @@ class DashboardRoute(models.Model):
         }
         return c
 
+pre_save.connect(DashboardRoute.update_stops, sender=DashboardRoute)
 post_save.connect(DashboardRoute.update_routes, sender=DashboardRoute)
 
