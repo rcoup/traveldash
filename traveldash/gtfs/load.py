@@ -22,7 +22,10 @@ def main():
     else:
         source = None
 
-    zip_file = args[0]
+    loader = transaction.commit_on_success(load_zip)
+    loader(args[0], source)
+
+def load_zip(zip_file, source):
     temp_dir = tempfile.mkdtemp()
     try:
         print('Extracting %s...' % zip_file)
@@ -33,22 +36,21 @@ def main():
     finally:
         shutil.rmtree(temp_dir)
 
-@transaction.commit_on_success
 def load(temp_dir, source):
     # load GTFS data files & transform/derive additional data
     # due to foreign key constraints these files need to be loaded in the appropriate order
-    #Agency.gtfs_load(source, temp_dir)
+    Agency.gtfs_load(source, temp_dir)
     Calendar.gtfs_load(source, temp_dir)
     CalendarDate.gtfs_load(source, temp_dir)
-    #Route.gtfs_load(source, temp_dir)
-    #Stop.gtfs_load(source, temp_dir)
-    #Transfer.gtfs_load(source, temp_dir)
-    #Shape.gtfs_load(source, temp_dir)
-    #Trip.gtfs_load(source, temp_dir)
-    #StopTime.gtfs_load(source, temp_dir)
-    #Frequency.gtfs_load(source, temp_dir)
-    #Fare.gtfs_load(source, temp_dir)
-    #FareRule.gtfs_load(source, temp_dir)
+    Route.gtfs_load(source, temp_dir)
+    Stop.gtfs_load(source, temp_dir)
+    Transfer.gtfs_load(source, temp_dir)
+    Shape.gtfs_load(source, temp_dir)
+    Trip.gtfs_load(source, temp_dir)
+    StopTime.gtfs_load(source, temp_dir)
+    Frequency.gtfs_load(source, temp_dir)
+    Fare.gtfs_load(source, temp_dir)
+    FareRule.gtfs_load(source, temp_dir)
 
     # Calculated/Derived stuff
     UniversalCalendar.gtfs_rebuild(source)
