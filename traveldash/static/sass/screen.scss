@@ -50,9 +50,9 @@ abbr
   background-color: black;
   color: white;
   font-size: 60%;
-  max-width: 10em;
+  max-width: 20em;
   line-height: 1.2em;
-  padding: 0.3em;
+  padding: 5px;
   z-index: 100;
   @include border-radius(2px);
 }
@@ -69,7 +69,7 @@ header {
 
   #header {
     @extend .panel;
-    margin: 1em 1em 0.5em 1em;
+    margin: 10px 10px 5px 10px;
   }
 }
 #container {
@@ -78,7 +78,8 @@ header {
 }
 #main {
   @extend .panel;
-  margin: 0.5em 1em 1em 1em;
+  margin: 5px 10px 10px 10px;
+  display: inline-block;
 }
 
 .messages {
@@ -100,27 +101,30 @@ header {
 
 .dashboard {
   html, body {
-   height: 100%;
+    height: 100%;
   }
-  header {
-    height: 4em;
-
-    .editLinks {
-      text-align: right;
-      float: right;
-      vertical-align: middle;
-      font-size: 80%;
-    }
+  #container header {
+    display: none;
   }
 
   table {
-    width: 100%;
     text-align: center;
+
+    caption {
+      .editLinks {
+        text-align: right;
+        float: right;
+        vertical-align: middle;
+        font-size: 80%;
+      }
+      padding-bottom: 0.5em;
+      margin-bottom: 0.5em;
+    }
     
     thead {
       color: $color-text-b;
       th {
-        padding: 0 0 0.5em 1em;
+        padding: 0 0.3em 0.5em 0.3em;
       }
     }
     
@@ -131,7 +135,7 @@ header {
       }
       td, th {
         vertical-align: top;
-        padding: 0.5em 0;
+        padding: 0.5em 0.25em;
         border-top: 1px solid $color-c;
       }
     }
@@ -142,7 +146,7 @@ header {
       background-position: center 0.5em;
     }
     .mode abbr {
-      min-width: 2em;
+      min-width: 1.2em;
       @include inline-block;
       border-bottom: none;
     }
@@ -160,10 +164,10 @@ header {
       min-width: 2em;
     }
     .arrives {
-      min-width: 5em;
+      min-width: 4em;
     }
     .departs {
-      min-width: 6em;
+      min-width: 4em;
     }
   }
 }

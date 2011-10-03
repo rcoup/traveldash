@@ -3,25 +3,28 @@
 {% block htmlclass%}{{block.super}} dashboard{% endblock %}
 {% block title %}{{dashboard.name}}{% endblock %}
 
-{% block extrahead %}
+{% block metahead %}
 {{ block.super }}
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 {% endblock %}
 
-{% block header %}
-    {% if request.user == dashboard.user %}
-    <div class="editLinks">
-        <a href="{% url traveldash.mine.views.dashboard_edit dashboard.pk %}">Edit</a>
-        <br/>
-        <a href="{% url traveldash.mine.views.dashboard_list %}">My Dashboards</a>
-    </div>
-    {% endif %}
-
-    <h1>{{ dashboard.name }}</h1>
-    
-{% endblock %}
+{% block header %}{% endblock %}
 
 {% block main %}
     <table>
+        <caption>
+            {% if request.user == dashboard.user %}
+            <div class="editLinks">
+                <a href="{% url traveldash.mine.views.dashboard_edit dashboard.pk %}">Edit</a>
+                <br/>
+                <a href="{% url traveldash.mine.views.dashboard_list %}">My Dashboards</a>
+            </div>
+            {% endif %}
+        
+            <h1>{{ dashboard.name }}</h1>
+        </caption>
+
         <thead>
             <th class="mode">&nbsp;</th>
             <th class="code">&nbsp;</th>
@@ -35,6 +38,6 @@
 
 {% block extrabody %}
 {{ block.super }}
-<script type="text/javascript" src="{{STATIC_URL}}js/libs/datejs.min.js" async="true"></script>
-<script type="text/javascript" src="{{STATIC_URL}}js/dashboard.js" async="true"></script>
+<script defer src="{{STATIC_URL}}js/libs/datejs.min.js"></script>
+<script defer src="{{STATIC_URL}}js/dashboard.js"></script>
 {% endblock %}

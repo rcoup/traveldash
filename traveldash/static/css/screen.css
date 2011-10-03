@@ -111,9 +111,9 @@ abbr {
   background-color: black;
   color: white;
   font-size: 60%;
-  max-width: 10em;
+  max-width: 20em;
   line-height: 1.2em;
-  padding: 0.3em;
+  padding: 5px;
   z-index: 100;
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
@@ -137,7 +137,7 @@ header {
 }
 /* line 70, ../sass/screen.scss */
 header #header {
-  margin: 1em 1em 0.5em 1em;
+  margin: 10px 10px 5px 10px;
 }
 
 /* line 75, ../sass/screen.scss */
@@ -148,10 +148,11 @@ header #header {
 
 /* line 79, ../sass/screen.scss */
 #main {
-  margin: 0.5em 1em 1em 1em;
+  margin: 5px 10px 10px 10px;
+  display: inline-block;
 }
 
-/* line 84, ../sass/screen.scss */
+/* line 85, ../sass/screen.scss */
 .messages {
   background-color: #79793e;
   list-style-type: circle;
@@ -166,7 +167,7 @@ header #header {
   border-radius: 4px;
 }
 
-/* line 92, ../sass/screen.scss */
+/* line 93, ../sass/screen.scss */
 .errorlist {
   background-color: #79793e;
   list-style-type: circle;
@@ -181,57 +182,61 @@ header #header {
   border-radius: 4px;
 }
 
-/* line 102, ../sass/screen.scss */
+/* line 103, ../sass/screen.scss */
 .dashboard html, .dashboard body {
   height: 100%;
 }
-/* line 105, ../sass/screen.scss */
-.dashboard header {
-  height: 4em;
+/* line 106, ../sass/screen.scss */
+.dashboard #container header {
+  display: none;
 }
-/* line 108, ../sass/screen.scss */
-.dashboard header .editLinks {
+/* line 110, ../sass/screen.scss */
+.dashboard table {
+  text-align: center;
+}
+/* line 113, ../sass/screen.scss */
+.dashboard table caption {
+  padding-bottom: 0.5em;
+  margin-bottom: 0.5em;
+}
+/* line 114, ../sass/screen.scss */
+.dashboard table caption .editLinks {
   text-align: right;
   float: right;
   vertical-align: middle;
   font-size: 80%;
 }
-/* line 116, ../sass/screen.scss */
-.dashboard table {
-  width: 100%;
-  text-align: center;
-}
-/* line 120, ../sass/screen.scss */
+/* line 124, ../sass/screen.scss */
 .dashboard table thead {
   color: #b2b23b;
 }
-/* line 122, ../sass/screen.scss */
+/* line 126, ../sass/screen.scss */
 .dashboard table thead th {
-  padding: 0 0 0.5em 1em;
+  padding: 0 0.3em 0.5em 0.3em;
 }
-/* line 127, ../sass/screen.scss */
+/* line 131, ../sass/screen.scss */
 .dashboard table tbody {
   font-size: 120%;
 }
-/* line 129, ../sass/screen.scss */
+/* line 133, ../sass/screen.scss */
 .dashboard table tbody tr {
   line-height: 1em;
 }
-/* line 132, ../sass/screen.scss */
+/* line 136, ../sass/screen.scss */
 .dashboard table tbody td, .dashboard table tbody th {
   vertical-align: top;
-  padding: 0.5em 0;
+  padding: 0.5em 0.25em;
   border-top: 1px solid #3f3f15;
 }
-/* line 139, ../sass/screen.scss */
+/* line 143, ../sass/screen.scss */
 .dashboard table .mode {
   background-size: auto 1.5em;
   background-repeat: no-repeat;
   background-position: center 0.5em;
 }
-/* line 144, ../sass/screen.scss */
+/* line 148, ../sass/screen.scss */
 .dashboard table .mode abbr {
-  min-width: 2em;
+  min-width: 1.2em;
   display: -moz-inline-box;
   -moz-box-orient: vertical;
   display: inline-block;
@@ -243,60 +248,60 @@ header #header {
 .dashboard table .mode abbr {
   *display: inline;
 }
-/* line 149, ../sass/screen.scss */
+/* line 153, ../sass/screen.scss */
 .dashboard table .routeType2 {
   background-image: url("/static/img/routeType2.svg");
 }
-/* line 152, ../sass/screen.scss */
+/* line 156, ../sass/screen.scss */
 .dashboard table .routeType3 {
   background-image: url("/static/img/routeType3.svg");
 }
-/* line 155, ../sass/screen.scss */
+/* line 159, ../sass/screen.scss */
 .dashboard table .routeType4 {
   background-image: url("/static/img/routeType4.svg");
 }
-/* line 159, ../sass/screen.scss */
+/* line 163, ../sass/screen.scss */
 .dashboard table .code {
   min-width: 2em;
 }
-/* line 162, ../sass/screen.scss */
+/* line 166, ../sass/screen.scss */
 .dashboard table .arrives {
-  min-width: 5em;
+  min-width: 4em;
 }
-/* line 165, ../sass/screen.scss */
+/* line 169, ../sass/screen.scss */
 .dashboard table .departs {
-  min-width: 6em;
+  min-width: 4em;
 }
 
-/* line 172, ../sass/screen.scss */
+/* line 176, ../sass/screen.scss */
 .dashboard_list #main table {
   width: 100%;
   margin-bottom: 1em;
 }
-/* line 176, ../sass/screen.scss */
+/* line 180, ../sass/screen.scss */
 .dashboard_list #main table tr {
   line-height: 1.5em;
 }
-/* line 180, ../sass/screen.scss */
+/* line 184, ../sass/screen.scss */
 .dashboard_list #main table .copyLink {
   font-size: 80%;
 }
 
-/* line 187, ../sass/screen.scss */
+/* line 191, ../sass/screen.scss */
 .dashboard_form #main .editLinks {
   margin-bottom: 1em;
 }
-/* line 191, ../sass/screen.scss */
+/* line 195, ../sass/screen.scss */
 .dashboard_form form {
   max-width: 45%;
   font-size: 80%;
 }
-/* line 195, ../sass/screen.scss */
+/* line 199, ../sass/screen.scss */
 .dashboard_form form p {
   clear: left;
   padding-top: 1em;
 }
-/* line 199, ../sass/screen.scss */
+/* line 203, ../sass/screen.scss */
 .dashboard_form form p.submit {
   clear: left;
   margin-top: 1em;
@@ -311,41 +316,41 @@ header #header {
   border-radius: 4px;
   padding: 0.5em;
 }
-/* line 207, ../sass/screen.scss */
+/* line 211, ../sass/screen.scss */
 .dashboard_form form p.submit button {
   margin: 0;
   padding-left: 1em;
   padding-right: 1em;
 }
-/* line 214, ../sass/screen.scss */
+/* line 218, ../sass/screen.scss */
 .dashboard_form form label {
   float: left;
   width: 55%;
 }
-/* line 218, ../sass/screen.scss */
+/* line 222, ../sass/screen.scss */
 .dashboard_form form input, .dashboard_form form .mapSelect {
   float: left;
 }
-/* line 221, ../sass/screen.scss */
+/* line 225, ../sass/screen.scss */
 .dashboard_form form input, .dashboard_form form button {
   font-size: 90%;
   font-family: "Gill Sans", "Gill Sans MT", sans-serif;
   padding: 0.2em;
   margin-top: -0.3em;
 }
-/* line 227, ../sass/screen.scss */
+/* line 231, ../sass/screen.scss */
 .dashboard_form form input {
   border: 1px solid black;
 }
-/* line 230, ../sass/screen.scss */
+/* line 234, ../sass/screen.scss */
 .dashboard_form form .mapSelect {
   max-width: 45%;
 }
-/* line 232, ../sass/screen.scss */
+/* line 236, ../sass/screen.scss */
 .dashboard_form form .mapSelect span {
   color: #b2b23b;
 }
-/* line 237, ../sass/screen.scss */
+/* line 241, ../sass/screen.scss */
 .dashboard_form form .helptext {
   clear: left;
   display: block;
@@ -354,66 +359,66 @@ header #header {
   text-align: right;
   margin-right: 2em;
 }
-/* line 246, ../sass/screen.scss */
+/* line 250, ../sass/screen.scss */
 .dashboard_form form .routeForm {
   clear: left;
   border-top: 2px solid #3f3f15;
   margin-top: 2em 0;
   padding-bottom: 2em;
 }
-/* line 253, ../sass/screen.scss */
+/* line 257, ../sass/screen.scss */
 .dashboard_form form .dashboardForm {
   clear: left;
   padding-bottom: 3em;
 }
-/* line 258, ../sass/screen.scss */
+/* line 262, ../sass/screen.scss */
 .dashboard_form form .another {
   color: #b2b23b;
 }
-/* line 263, ../sass/screen.scss */
+/* line 267, ../sass/screen.scss */
 .dashboard_form #mapContainer {
   float: right;
   width: 50%;
   height: 400px;
   background-color: #79793e;
 }
-/* line 269, ../sass/screen.scss */
+/* line 273, ../sass/screen.scss */
 .dashboard_form #mapContainer #map {
   width: 100%;
   height: 100%;
   color: black;
 }
 
-/* line 277, ../sass/screen.scss */
+/* line 281, ../sass/screen.scss */
 .home {
   font-size: 100%;
   width: 100%;
 }
-/* line 281, ../sass/screen.scss */
+/* line 285, ../sass/screen.scss */
 .home h2, .home h3 {
   text-align: center;
   padding-bottom: 0.8em;
   font-weight: bold;
 }
-/* line 287, ../sass/screen.scss */
+/* line 291, ../sass/screen.scss */
 .home header {
   padding: 1em 0;
 }
-/* line 290, ../sass/screen.scss */
+/* line 294, ../sass/screen.scss */
 .home header h1 {
   color: #b2b23b;
 }
-/* line 295, ../sass/screen.scss */
+/* line 299, ../sass/screen.scss */
 .home .user {
   margin: 1em 0;
 }
-/* line 299, ../sass/screen.scss */
+/* line 303, ../sass/screen.scss */
 .home #home {
   width: 940px;
   margin: 0 auto;
   text-align: center;
 }
-/* line 304, ../sass/screen.scss */
+/* line 308, ../sass/screen.scss */
 .home #home .panel3 {
   margin: 10px;
   float: left;
@@ -421,35 +426,35 @@ header #header {
   height: 10em;
   text-align: left;
 }
-/* line 312, ../sass/screen.scss */
+/* line 316, ../sass/screen.scss */
 .home #home .panel3 p {
   margin-bottom: 0.5em;
 }
-/* line 316, ../sass/screen.scss */
+/* line 320, ../sass/screen.scss */
 .home #home .panel3 ul {
   list-style-type: circle;
   margin-left: 30px;
 }
-/* line 323, ../sass/screen.scss */
+/* line 327, ../sass/screen.scss */
 .home #example iframe {
   width: 100%;
   font-size: 50%;
 }
 
-/* line 331, ../sass/screen.scss */
+/* line 335, ../sass/screen.scss */
 .login #main {
   text-align: center;
 }
-/* line 334, ../sass/screen.scss */
+/* line 338, ../sass/screen.scss */
 .login #main ul {
   margin: 1em auto;
 }
-/* line 337, ../sass/screen.scss */
+/* line 341, ../sass/screen.scss */
 .login #main ul li {
   display: inline;
   padding: 2em;
 }
-/* line 340, ../sass/screen.scss */
+/* line 344, ../sass/screen.scss */
 .login #main ul li form {
   display: -moz-inline-box;
   -moz-box-orient: vertical;

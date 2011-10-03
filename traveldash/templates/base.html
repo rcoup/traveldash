@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  {% block metahead %}
+  <meta name="viewport" content="user-scalable=no,width=device-width" />
+  {% endblock metahead %}
 
   <title>{% block title %}{{title}}{% endblock %}</title>
 
@@ -11,7 +13,6 @@
   <!--[if IE]>
       <link href="{{STATIC_URL}}css/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
   <![endif]-->
-
   <script src="{{STATIC_URL}}js/libs/modernizr-2.0.6.min.js"></script>
   
   {% block extrahead %}{% endblock %}
@@ -45,21 +46,20 @@
 {% endblock content %}
   </div>
 
-  <!--script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script-->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
   <script>window.jQuery || document.write('<script src="{{STATIC_URL}}js/libs/jquery-1.6.2.min.js"><\/script>')</script>
 
   <script defer src="{{STATIC_URL}}js/plugins.js"></script>
   <script defer src="{{STATIC_URL}}js/script.js"></script>
 
-  {% comment %}
-  <!-- Change UA-XXXXX-X to be your site's ID -->
+  {% if GOOGLE_ANALYTICS_KEY %}
   <script>
-    window._gaq = [['_setAccount','UAXXXXXXXX1'],['_trackPageview'],['_trackPageLoadTime']];
+    window._gaq = [['_setAccount','{{ GOOGLE_ANALYTICS_KEY }}'],['_trackPageview'],['_trackPageLoadTime']];
     Modernizr.load({
       load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
     });
   </script>
-  {% endcomment %}
+  {% endif %}
 
   <!--[if lt IE 7 ]>
     <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>

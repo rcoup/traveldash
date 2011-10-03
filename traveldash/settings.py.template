@@ -69,10 +69,12 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'socialregistration.middleware.FacebookMiddleware',
 )
 
 ROOT_URLCONF = 'traveldash.urls'
@@ -84,6 +86,12 @@ TEMPLATE_DIRS = (
     "/path/to/traveldash/traveldash/templates",
 )
 
+STATICFILES_DIRS = (
+    "/path/to/traveldash/traveldash/static",
+)
+STATIC_URL = '/static/'
+STATIC_ROOT = '/path/to/traveldash/static'
+
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.request",
@@ -91,7 +99,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "django.core.context_processors.static",
-    "django.contrib.messages.context_processors.messages"
+    "django.contrib.messages.context_processors.messages",
+    "traveldash.context_processors.google_analytics",
 )
 
 INSTALLED_APPS = (
@@ -103,6 +112,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.gis',
+    'django.contrib.staticfiles',
     
     'south',
     'socialregistration',
@@ -114,14 +124,27 @@ INSTALLED_APPS = (
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'socialregistration.auth.TwitterAuth',
+    'socialregistration.auth.FacebookAuth',
 )
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/mine/'
+
+USE_ETAGS = True
 
 TWITTER_CONSUMER_KEY = ''
 TWITTER_CONSUMER_SECRET_KEY = ''
 TWITTER_REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token'
 TWITTER_ACCESS_TOKEN_URL = 'https://api.twitter.com/oauth/access_token'
 TWITTER_AUTHORIZATION_URL = 'https://api.twitter.com/oauth/authorize'
-SOCIALREGISTRATION_GENERATE_USERNAME = True
+
+FACEBOOK_APP_ID = ''
+FACEBOOK_API_KEY = ''
+FACEBOOK_SECRET_KEY = ''
+
+SOCIALREGISTRATION_GENERATE_USERNAME = False
 
 GTFS_SOURCE_MODEL = 'gtfs.Source'
 GTFS_STOP_FUSION_TABLE_ID = 000000
+
+GOOGLE_ANALYTICS_KEY = 'UA-6999967-2'
