@@ -1,6 +1,8 @@
 
 (function() {
     window.td = {
+        warning_time: 0,
+
         formatDateUntil : function(date) {
             var delta = -date.getElapsed();
             var h = Math.floor(delta / (60*60*1000));
@@ -19,7 +21,11 @@
             var arrives = Date.parse(dep.arrives);
             var endTime = arrives.clone().addMinutes(route.to.walk_time);
 
-            var row = $("<tr/>", {id: "td_trip_" + trip.id});
+            var row = $("<tr/>", {
+                    id: "td_trip_" + trip.id,
+                    "class": "dep"
+                })
+                .data('departure', dep);
             
             $("<th/>", {
                 "class": "mode routeType" + trip.mode
@@ -47,10 +53,10 @@
                 })
                 .appendTo(row)
                 .append($("<abbr/>", {
+                    "class": "departsETA",
                     text: td.formatDateUntil(departs),
                     title: "departs at " + departs.toString("t") + " from " + route.from.name
                 }));
-            console.log(z);
             
             $("<td/>", {
                 "class": "arrives"
@@ -65,6 +71,10 @@
         
         update: function() {
             $.getJSON('data/', function(data) {
+                $.touchTooltip();
+
+                td.warning_time = data.warning_time;
+
                 var valid_ids = [];
                 $.each(data.departures, function(i, dep) {
                     var id = "td_trip_" + dep.trip.id;
@@ -79,15 +89,43 @@
                         return (valid_ids.indexOf(this.id) < 0);
                     })
                     .remove();
-                $.touchTooltip();
+                td.refreshTimes();
+            });
+        },
+
+        refreshTimes : function() {
+            $('.dep').each(function(i) {
+                var dep = $(this).data('departure');
+                var departs = Date.parse(dep.departs);
+                var deltaMins = -departs.getElapsed() / (60*1000);
+                if (deltaMins < dep.walk_time_start) {
+                    $(this).remove();
+                } else {
+                    $(".departsETA", this).text(td.formatDateUntil(departs));
+
+                    if (Math.ceil(deltaMins) <= td.warning_time) {
+                        $(this).toggleClass("warning", true);
+                    }
+                }
             });
         }
     };
 
     $(function() {
+        // times in seconds
+        var UPDATE = 5*60;
+        var REFRESH = 20;
+
         // onload
         td.schedule = $("#schedule");
         td.update();
-        window.setInterval(td.update, 60000);
+
+        window.setInterval(td.update, UPDATE*1000);
+        window.setInterval(td.refreshTimes, REFRESH*1000);
+
+        window.addEventListener('focus', function() {
+            td.refreshTimes();
+            td.update();
+        });
     });
 })();

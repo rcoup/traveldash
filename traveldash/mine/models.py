@@ -38,7 +38,7 @@ class Dashboard(models.Model):
     def as_json(self):
         c = {
             "name": self.name,
-            "warning_time": self.warning_time*60,
+            "warning_time": self.warning_time,
             "routes": dict([(route.id, route.as_json()) for route in self.routes.all()]),
         }
         c.update(self.json_update())
@@ -47,6 +47,7 @@ class Dashboard(models.Model):
     def json_update(self):
         c = {
             "departures": [],
+            "warning_time": self.warning_time,
         }
         for route, trip, dep, arr in self.next():
             c["departures"].append({
@@ -62,6 +63,7 @@ class Dashboard(models.Model):
                 },
                 "departs": dep.isoformat(),
                 "arrives": arr.isoformat(),
+                "walk_time_start": route.walk_time_start,
             })
         return c
 
