@@ -1,15 +1,16 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from django.contrib import admin
 
-from traveldash.mine.models import Dashboard, DashboardRoute
+from traveldash.mine.models import Dashboard, DashboardRoute, GTFSSource
+
 
 class DashboardRouteInline(admin.StackedInline):
     model = DashboardRoute
     raw_id_fields = ('from_stop', 'to_stop',)
     readonly_fields = ('routes', 'next')
     extra = 1
-    
+
     def next(self, obj):
         now = datetime.now()
         msg = []
@@ -20,6 +21,7 @@ class DashboardRouteInline(admin.StackedInline):
             msg.append(u"%s in %s%s" % (trip.route.short_name, h, m))
 
         return u"; ".join(msg)
+
 
 class DashboardAdmin(admin.ModelAdmin):
     list_display = ('user', 'name', 'created_at',)
@@ -43,4 +45,9 @@ class DashboardAdmin(admin.ModelAdmin):
 
         return u"; ".join(msg)
 
+
+class GTFSSourceAdmin(admin.ModelAdmin):
+    pass
+
 admin.site.register(Dashboard, DashboardAdmin)
+admin.site.register(GTFSSource, GTFSSourceAdmin)
