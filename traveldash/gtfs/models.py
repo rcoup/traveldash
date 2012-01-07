@@ -171,17 +171,25 @@ class GTFSModel(object):
             query = {reference: value}
             if 'source' in cls._meta.get_all_field_names():
                 query['source'] = source
-    
+
             pk = model_class.objects.get(**query).pk
             cls._gtfs_relation_cache[cache_key] = pk
         return pk
 
+
+class SourceBase(models.Model):
+    name = models.CharField(max_length=200)
+
+    class Meta:
+        abstract = True
+
+    def __unicode__(self):
+        return unicode(self.name)
+
 if settings.GTFS_SOURCE_MODEL == "gtfs.Source":
-    class Source(models.Model):
-        name = models.CharField(max_length=200)
-    
-        def __unicode__(self):
-            return unicode(self.name)
+    class Source(SourceBase):
+        pass
+
 
 class Agency(models.Model, GTFSModel):
     GTFS_FILENAME = 'agency.txt'
