@@ -13,18 +13,18 @@ from django.db.models.loading import get_model
 
 class GTFSModel(object):
     """ Loading behaviour for GTFS files """
-    
+
     class UTF8Recoder(object):
         """ Iterator that reads an encoded stream and reencodes the input to UTF-8 """
         def __init__(self, f, encoding):
             self.reader = codecs.getreader(encoding)(f)
-    
+
         def __iter__(self):
             return self
-    
+
         def next(self):
             return self.reader.next().encode('utf-8')
- 
+
     @classmethod
     def gtfs_load(cls, source, directory):
         print "%s..." % cls.__name__
@@ -39,17 +39,21 @@ class GTFSModel(object):
                 with open(file_path, 'r') as f:
                     utf8_file = GTFSModel.UTF8Recoder(f, 'utf-8-sig')
                     reader = csv.DictReader(utf8_file)
-    
+
                     cls.gtfs_truncate(source)
-    
+
                     for i, o in enumerate(cls.gtfs_generate(source, reader)):
-                        o.save()
-    
+                        try:
+                            o.save()
+                        except:
+                            print "Error processing row:", o.__dict__
+                            raise
+
                 processing_time = time.time() - start_time
-                print '  %d records, %.0f seconds' % (i+1, processing_time)
+                print '  %d records, %.0f seconds' % (i + 1, processing_time)
             finally:
                 del cls._gtfs_relation_cache
-    
+
     @classmethod
     def gtfs_truncate(cls, source):
         # truncate existing records
@@ -57,7 +61,7 @@ class GTFSModel(object):
             cls.objects.filter(source=source).delete()
         else:
             cls.objects.all().delete()
-    
+
     @classmethod
     def gtfs_filename(cls):
         if hasattr(cls, 'GTFS_FILENAME'):
@@ -74,7 +78,7 @@ class GTFSModel(object):
     def gtfs_generate(cls, source, reader):
         for row in reader:
             yield cls.gtfs_instantiate(source, row)
-    
+
     @classmethod
     def gtfs_instantiate(cls, source, row):
         o = cls()
@@ -89,7 +93,7 @@ class GTFSModel(object):
                 v = v.strip()
             if k.endswith('date'):
                 v = datetime.datetime.strptime(v, '%Y%m%d').date()
-            
+
             if k in cls._meta.get_all_field_names():
                 # normal field
                 try:
@@ -312,7 +316,7 @@ class TripManager(models.Manager):
         qs = self.get_query_set().filter(stop_times__stop=from_stop, stop_times__pickup_type=StopTime.PICKUP)
         qs = qs.filter(stop_times__stop=to_stop, stop_times__drop_off_type=StopTime.DROPOFF)
         return qs.distinct()
-    
+
     def for_dates(self, *dates):
         return self.get_query_set().filter(service__all_dates__date__in=dates)
 
@@ -336,7 +340,7 @@ class Trip(models.Model, GTFSModel):
 
     class Meta:
         unique_together = (("service", "trip_id"), ("route", "trip_id"))
-        
+
     @property
     def is_outbound(self):
         return self.direction_id == self.OUTBOUND
@@ -363,7 +367,7 @@ class StopTime(models.Model, GTFSModel):
         (2, "Must phone agency to arrange pickup"),
         (3, "Must coordinate with driver to arrange pickup"),
     )
-    
+
     trip = models.ForeignKey('Trip', related_name='stop_times')
     arrival_time = models.IntegerField(null=True)
     arrival_days = models.IntegerField(null=True)
@@ -413,7 +417,7 @@ class Service(models.Model, GTFSModel):
 
     def __unicode__(self):
         return unicode(self.service_id)
-    
+
 class Calendar(models.Model, GTFSModel):
     GTFS_FILENAME = 'calendar.txt'
 
@@ -435,7 +439,7 @@ class Calendar(models.Model, GTFSModel):
         except Service.DoesNotExist:
             o.service = Service.objects.create(source=source, service_id=row['service_id'])
         return ('service_id',)
-    
+
     def __unicode__(self):
         return u"%s (%s to %s)" % (self.service.service_id, self.start_date, self.end_date)
 
@@ -477,7 +481,7 @@ class CalendarDate(models.Model, GTFSModel):
 
     def __unicode__(self):
         return u"%s (%s): %s" % (self.service.service_id, self.date, self.get_exception_type_display())
-    
+
     @property
     def is_added(self):
         return self.exception_type == self.ADDED
@@ -551,10 +555,10 @@ class Shape(models.Model, GTFSModel):
                 path = geos.LineString(coords)
                 coords = []
                 yield Shape(source=source, shape_id=shape_id, path=path)
-            
+
             shape_id = row['shape_id']
             coords.append((float(row['shape_pt_lon']), float(row['shape_pt_lat'])))
-        
+
         if shape_id is not None:
             path = geos.LineString(coords)
             yield Shape(source=source, shape_id=shape_id, path=path)
@@ -587,7 +591,7 @@ class Frequency(models.Model, GTFSModel):
     end_time = models.IntegerField(null=True)
     end_time_days = models.IntegerField(null=True)
     headway_secs = models.IntegerField()
-    
+
     class Meta:
         verbose_name_plural = "Frequencies"
 
@@ -612,13 +616,13 @@ class Transfer(models.Model, GTFSModel):
 class UniversalCalendar(models.Model):
     service = models.ForeignKey('Service', related_name='all_dates')
     date = models.DateField(db_index=True)
-    
+
     class Meta:
         unique_together = (("service", "date"),)
-    
+
     def __unicode__(self):
         return unicode(self.date)
-    
+
     @classmethod
     def gtfs_rebuild(cls, source):
         print "%s..." % cls.__name__
@@ -633,7 +637,7 @@ class UniversalCalendar(models.Model):
                 cls.objects.create(service_id=e.service_id, date=e.date)
             else:
                 removes.add((e.service_id, e.date))
-        
+
         for c in Calendar.objects.filter(service__source=source).iterator():
             for d in c.get_dates():
                 if (c.service_id, d) not in removes:
