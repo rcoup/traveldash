@@ -33,7 +33,7 @@ class GTFSSource(SourceBase):
     page_xpath = models.CharField(max_length=200, blank=True, help_text='XPath to the ZIP URL in the page described by page_url.')
 
     last_update = models.DateTimeField(null=True, blank=True)
-    update_freq = models.IntegerField(null=True, blank=True, default=14, help_text='How often to auto-update (days)')
+    update_freq = models.IntegerField('Update frequency', default=14, help_text='How often this feed should be updated (days)')
 
     objects = GTFSSourceManager()
 
