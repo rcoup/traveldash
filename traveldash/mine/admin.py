@@ -47,7 +47,12 @@ class DashboardAdmin(admin.ModelAdmin):
 
 
 class GTFSSourceAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'get_can_autoupdate', 'last_update', 'update_freq',)
+
+    def get_can_autoupdate(self, obj):
+        return obj.can_autoupdate
+    get_can_autoupdate.boolean = True
+    get_can_autoupdate.short_description = 'Auto-update?'
 
 admin.site.register(Dashboard, DashboardAdmin)
 admin.site.register(GTFSSource, GTFSSourceAdmin)

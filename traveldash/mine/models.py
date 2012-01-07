@@ -16,8 +16,8 @@ class GTFSSourceManager(models.Manager):
         Return sources needing an update, based on the update_freq/last_update attributes.
         updateable can be True/False/None to return Updateable/Not-updateable/Both.
         """
-        qs = self.get_query_set().exclude(update_freq__isnull=True)
-        qs = qs.extra(where=("(last_update IS NULL) OR (last_update + interval '%d days' <= NOW())",))
+        qs = self.get_query_set()
+        qs = qs.extra(where=("(last_update IS NULL) OR (last_update + CAST(textcat(text(update_freq), text(' days')) as interval) <= NOW())",))
         if updateable is True:
             qs = qs.exclude(zip_url='', page_url='', page_xpath='')
         elif updateable is False:
@@ -37,6 +37,10 @@ class GTFSSource(SourceBase):
 
     objects = GTFSSourceManager()
 
+    @property
+    def can_autoupdate(self):
+        return bool(self.zip_url or (self.page_url and self.page_xpath))
+
     def download_zip(self, fp):
         """
         Download the ZIP file into the specified file-like object. If there is no way to
@@ -44,7 +48,7 @@ class GTFSSource(SourceBase):
         """
         zip_url = self.get_zip_url()
         zip_req = urllib2.urlopen(zip_url)
-        for chunk in iter(lambda: zip_req.read(16 * 1024), ''):
+        for chunk in iter(lambda: zip_req.read(64 * 1024), ''):
             fp.write(chunk)
         fp.flush()
 
