@@ -2,14 +2,19 @@
 
 {% block title %}Delete Dashboard?{% endblock %}
 
-{% block header %}
-    <h1>Delete Dashboard?</h1>
-{% endblock %}
-
-{% block main %}
+{% block content %}
+  <div class="content">
+    <div class="page-header">
+	    <h1>Delete Dashboard</h1>
+	  </div>
+    	
     <form method="post" action="">
         {% csrf_token %}
-        Are you sure you want to delete Dashboard "{{dashboard.name}}"?
-        <button type="submit">Delete it</button>
+        <p>Are you sure you want to delete Dashboard "{{dashboard.name}}"?</p>
+        <p>
+        	<button type="submit" class="btn danger">Delete it</button>
+	        <a href="{{dashboard.get_edit_url}}" class="btn">Cancel</a>
+	      </p>
     </form>
+  </div>
 {% endblock %}

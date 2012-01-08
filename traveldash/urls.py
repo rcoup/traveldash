@@ -5,12 +5,11 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'', include('traveldash.mine.urls')),
+    url(r'', include('traveldash.mine.urls')),
 
-    (r'^social/', include('socialregistration.urls')),
+    url(r'', include('social_auth.urls')),
 
-    (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    (r'^admin/', include(admin.site.urls)),
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^admin/', include(admin.site.urls)),
 )
 urlpatterns += staticfiles_urlpatterns()
-

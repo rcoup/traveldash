@@ -1,0 +1,57 @@
+{% load gravatar %}
+
+<div id="menu" class="topbar" data-dropdown="dropdown">
+  <div class="fill">
+    <div class="container">
+      <a class="brand" href="/">TravelDash</a>
+
+      {% if request.user.is_authenticated %}
+      <ul class="nav">
+        {% for ud in request.user.dashboards.all %}
+          <li {% if dashboard and ud == dashboard %}class="active"{% endif %}><a href="{{ ud.get_absolute_url }}">{{ud.name}}</a></li>
+        {% empty %}
+          <li>
+            <a href="/new/">New Dashboard...</a>
+          </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      <ul class="nav secondary-nav">
+      {% if request.user.is_authenticated %}
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle">{{ user.username }}</a>
+          <ul class="dropdown-menu">
+            <li>
+              <a href="/mine/" class="profile">
+                {% gravatar_img_for_user request.user 32 %}
+                <strong>{{ request.user.get_full_name }}</strong>
+                <br/><span>View&nbsp;my&nbsp;dashboards</span>
+                <div class="clear"></div>
+              </a>
+            </li>
+            <li class="divider"></li>
+            <li>
+              <a href="/new/">New Dashboard...</a>
+            </li>
+          {% if request.user.is_staff %}
+            <li class="divider"></li>
+            <li>
+              <a href="/admin/" class="admin">Admin</a>
+            </li>
+          {% endif %}
+            <li class="divider"></li>
+            <li>
+              <a href="/logout/">Sign out</a>
+            </li>
+          </ul>
+        </li>
+      {% else %}
+        <li>
+          <a href="/login/">Sign in</a>
+        </li>
+      {% endif %}
+      </ul>
+    </div>
+  </div>
+</div>

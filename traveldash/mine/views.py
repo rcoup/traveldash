@@ -13,8 +13,11 @@ from django.forms.models import inlineformset_factory
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
+from bootstrap.forms import BootstrapModelForm
+
 from traveldash.mine.models import Dashboard, DashboardRoute
-from traveldash.gtfs.models import Route
+from traveldash.gtfs.models import Route, Stop
+
 
 @vary_on_cookie
 def home(request):
@@ -30,7 +33,7 @@ def dashboard(request, pk):
         dashboard = Dashboard.objects.get(pk=pk)
     except Dashboard.DoesNotExist:
         raise Http404
-    
+
     return TemplateResponse(request, "mine/dashboard.html", {'dashboard': dashboard})
 
 @vary_on_cookie
@@ -40,7 +43,7 @@ def dashboard_update(request, pk):
         dashboard = Dashboard.objects.get(pk=pk)
     except Dashboard.DoesNotExist:
         return HttpResponse(json.dumps({"error": "dashboard-not-found"}), status=404, content_type="application/json")
-    
+
     content = dashboard.as_json()
     return HttpResponse(json.dumps(content), content_type="application/json")
 
@@ -50,17 +53,18 @@ def dashboard_list(request):
         'dashboard_list': Dashboard.objects.filter(user=request.user),
         'base_url': request.build_absolute_uri('/')[:-1],
     }
-    return TemplateResponse(request, "mine/dashboard_list.html", c) 
+    return TemplateResponse(request, "mine/dashboard_list.html", c)
 
-class RouteForm(forms.ModelForm):
+
+class RouteForm(BootstrapModelForm):
     class Meta:
         model = DashboardRoute
-        fields = ('from_stop', 'walk_time_start', 'to_stop', 'walk_time_end', 'name',)
+        fields = ('id', 'from_stop', 'walk_time_start', 'to_stop', 'walk_time_end',)
         widgets = {
-            'from_stop': forms.TextInput(attrs={'class':'gtfsStop'}),
-            'to_stop': forms.TextInput(attrs={'class':'gtfsStop'}),
+            'from_stop': forms.TextInput(attrs={'class': 'gtfsStop'}),
+            'to_stop': forms.TextInput(attrs={'class': 'gtfsStop'}),
         }
-    
+
     def clean(self):
         cd = self.cleaned_data
         if ('from_stop' in cd) and ('to_stop' in cd):
@@ -68,12 +72,27 @@ class RouteForm(forms.ModelForm):
                 raise forms.ValidationError("No Transport routes between the stops you've selected")
         return cd
 
+    def stop_json(self):
+        return json.dumps({
+            'from_stop': self._stop_info(self['from_stop'].value()),
+            'to_stop': self._stop_info(self['to_stop'].value()),
+        })
+
+    def _stop_info(self, stop_id):
+        try:
+            stop = Stop.objects.get(pk=stop_id)
+            return {'id': stop.pk, 'name': stop.name, 'location': stop.location.tuple}
+        except Stop.DoesNotExist:
+            return None
+
 RouteFormSet = inlineformset_factory(Dashboard, DashboardRoute, form=RouteForm, extra=1)
 
-class DashboardForm(forms.ModelForm):
+
+class DashboardForm(BootstrapModelForm):
     class Meta:
         model = Dashboard
         exclude = ('user',)
+
 
 @login_required
 def dashboard_create(request):
@@ -101,7 +120,7 @@ def dashboard_edit(request, pk):
         dashboard = Dashboard.objects.filter(user=request.user).get(pk=pk)
     except Dashboard.DoesNotExist:
         raise Http404
-    
+
     if request.method == "POST":
         form = DashboardForm(request.POST, instance=dashboard)
         if form.is_valid():
@@ -110,7 +129,7 @@ def dashboard_edit(request, pk):
             if route_formset.is_valid():
                 dashboard.save()
                 route_formset.save()
-                
+
                 if dashboard.routes.count() == 0:
                     dashboard.delete()
                     messages.success(request, "Deleted empty dashboard")

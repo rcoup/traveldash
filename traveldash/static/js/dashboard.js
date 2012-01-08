@@ -52,8 +52,8 @@
                 "class": "departs"
                 })
                 .appendTo(row)
-                .append($("<abbr/>", {
-                    "class": "departsETA",
+                .append($("<span/>", {
+                    "class": "departsETA tooltip",
                     text: td.formatDateUntil(departs),
                     title: "departs at " + departs.toString("t") + " from " + route.from.name
                 }));
@@ -62,7 +62,8 @@
                 "class": "arrives"
                 })
                 .appendTo(row)
-                .append($("<abbr/>", {
+                .append($("<span/>", {
+                    "class": "tooltip",
                     text: endTime.toString("t"),
                     title: "arrives at " + arrives.toString("t") + " at " + route.to.name
                 }));
@@ -71,8 +72,6 @@
         
         update: function() {
             $.getJSON('data/', function(data) {
-                $.touchTooltip();
-
                 td.warning_time = data.warning_time;
 
                 var valid_ids = [];
@@ -115,6 +114,44 @@
         // times in seconds
         var UPDATE = 5*60;
         var REFRESH = 20;
+
+        if (Modernizr.touch) {
+            // for touch devices, use click to activate and clear tooltips
+            $('#schedule').delegate('.tooltip', 'click', function () {
+                var tw = $(this).data('twipsy');
+                if (!tw) {
+                    $(this).twipsy({placement: 'below', trigger: 'manual'});
+                }
+                $(this).twipsy('toggle');
+            });
+            $('body').delegate('.twipsy', 'click', function () {
+                var $tip = $(this);
+                $tip.removeClass('in');
+
+                function removeElement() {
+                    $tip.remove();
+                }
+                var transitionEnd;
+                if ($.support.transition) {
+                    transitionEnd = "TransitionEnd";
+                    if ($.browser.webkit) {
+                        transitionEnd = "webkitTransitionEnd";
+                    } else if ($.browser.mozilla) {
+                        transitionEnd = "transitionend";
+                    } else if ($.browser.opera) {
+                        transitionEnd = "oTransitionEnd";
+                    }
+                }
+
+                if ($.support.transition && $tip.hasClass('fade')) {
+                    $tip.bind(transitionEnd, removeElement);
+                } else {
+                    removeElement();
+                }
+            });
+        } else {
+            $('#schedule .tooltip').twipsy({live: true, placement: 'below'});
+        }
 
         // onload
         td.schedule = $("#schedule");

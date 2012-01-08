@@ -8,43 +8,72 @@
 
 {% block extrabody %}
 {{ block.super }}
+<script defer src="{{STATIC_URL}}js/libs/bootstrap-modal.js"></script>
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;region=NZ"></script>
 <script type="text/javascript" src="{{STATIC_URL}}js/dashboard_form.js"></script>
 <script type="text/javascript">td.stopfusionTableId = {{ stopFusionTableId }};</script>
 {% endblock %}
 
-{% block main %}
+{% block content %}
+  <div class="content">
+    <div class="page-header">
     {% if dashboard %}
-    <p class="editLinks">
-        <a href="{{ dashboard.get_absolute_url }}">View Dashboard</a>
-        -
-        <a href="{% url dashboard-delete dashboard.pk %}">Delete this Dashboard</a>
-    </p>
+      <p class="headLinks">
+        <a href="{{ dashboard.get_absolute_url }}" class="btn small">View Dashboard</a>
+      </p>
+      <h1>{{ dashboard.name }}</h1>
+    {% else %}
+      <h1>New Dashboard</h1>
     {% endif %}
-
-    <div id="mapContainer"><div id="map"></div></div>
+    </div>
 
     <form method="post" action="">
-        <p class="submit"><button type="submit">Save</button></p>
+      {% csrf_token %}
 
-        {% csrf_token %}
+      <div class="dashboardForm">
+      {{ form }}
+      </div>
 
-        <div class="dashboardForm">
-        {{ form.as_p }}
-        </div>
+      {{ route_formset.management_form }}
+      <script>tdStopInfo = {};</script>
 
-        {{ route_formset.management_form }}
+      {% for routeform in route_formset.forms %}
+      <div class="routeForm">
+        {% if not forloop.first %}
+        <h3>Add another route if you need to...</h3>
+        {% endif %}
 
-        {% for routeform in route_formset.forms %}
-        <div class="routeForm">
-            {% if not forloop.first %}
-            <p class="another">Add another route if you need to...</p>
-            {% endif %}
-            {{ routeform.as_p }}
-        </div>
-        {% endfor %}
+        {{ routeform }}
+        {{ routeform.id }}
+        <script>tdStopInfo["{{routeform.prefix|safe}}"] = {{ routeform.stop_json|safe }};</script>
+      </div>
+      {% endfor %}
 
-        <p class="submit"><button type="submit">Save</button></p>
+      <div class="actions">
+        {% if dashboard %}
+        <a href="{% url dashboard-delete dashboard.pk %}" class="delete btn danger">Delete this Dashboard</a>
+        {% endif %}
+        <button type="submit" class="btn primary">Save</button>
+        {% if dashboard %}
+        <a href="{{ dashboard.get_absolute_url }}" class="btn">Cancel</a>
+        {% endif %}
+      </div>
     </form>
     <div class="clear" ></div>
+
+    <div id="getstop-modal" class="modal hide fade">
+      <div class="modal-header">
+        <a href="#" class="close">&times;</a>
+        <h3>Select a Stop</h3>
+      </div>
+      <div class="modal-body">
+        <div id="map"></div>
+      </div>
+      <div class="modal-footer">
+        <p id="getstop-name"></p>
+        <button id="getstop-save" href="#" class="btn primary">Save</button>
+        <button id="getstop-cancel" href="#" class="btn secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
 {% endblock %}

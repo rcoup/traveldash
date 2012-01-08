@@ -7,61 +7,27 @@
 {% endblock %}
 
 {% block content %}
-<div id="home">
-    <header>
-        <h1>TravelDash</h1>
-        <h2>Your own Public Transport Dashboard</h2>
-    </header>
-    
-    {% if request.user.is_authenticated %}
-    <div class="user">
-        <p>Welcome back {{request.user}}, view <a href="{% url traveldash.mine.views.dashboard_list %}">your Dashboards here</a>.</p>
-    </div>
-    {% endif %}
+  <div class="hero-unit">
+    <h1>Your own Public Transport Dashboard</h1>
+    <p>Just want to know when your next buses/trains home are? Me too! Your dashboard shows just the stops and times that matter to you.</p>
+    <p><a href="/login/" class="btn primary large">Sign up and get started &raquo;</a></p>
+  </div>
 
-    <div class="panel3">
-        <h3>What is TravelDash?</h3>
-        <p>Just want to know when your next buses/trains home are? Me too!</p>
-        <p>Your dashboard shows just the stops and times that matter to you.</p>
+  <!-- Example row of columns -->
+  <div class="row">
+    <div class="span-one-third">
+      <h2>Anywhere</h2>
+      <p>Leave it open in a browser tab, load it on your phone, or embed a dashboard in your team wiki. Have different dashboards for getting to work, home, or school? No problems.</p>
     </div>
-
-    <div class="panel3">
-        <h3>Get Started</h3>
-        <p>Auckland only just now.</p>
-        <p>Use Twitter or Facebook to sign in and <a href="{% url traveldash.mine.views.dashboard_create %}">create a Dashboard</a>.</p>
+    <div class="span-one-third">
+      <h2>Cities</h2>
+      <p>Currently just Auckland, New Zealand. Next up will be Wellington,
+      and other cities are on their way.</p>
     </div>
-
-    <div id="example" class="panel3">
-        <h3>Example</h3>
-        Check out {{example_dashboard.user}}'s 
-        <a href="{{example_dashboard.get_absolute_url}}">
-            {{example_dashboard.name}} Dashboard</a>
-        now.
+    <div class="span-one-third">
+      <h2>Example</h2>
+      Check out {{example_dashboard.user}}'s <a href="{{example_dashboard.get_absolute_url}}">{{example_dashboard.name}} Dashboard</a>
+    now.</p>
     </div>
-    
-    <div class="clear"></div>
-
-    <div class="panel3">
-        <h3>Anywhere</h3>
-        <p>Embed a dashboard in your team wiki, leave it open in a browser tab, or load it on your phone.</p>
-        <p>Have different dashboards for getting to work, home, or school? No problems.</p>
-    </div>
-
-    <div class="panel3">
-        <h2>Coming Soon</h2>
-        <ul>
-            <li>Other Cities</li>
-            <li>Live updates/delays for your stops</li>
-            <li><a href="mailto:robert+traveldash@coup.net.nz">What else do you want?</a></li>
-        </ul>
-    </div>
-
-    <div class="panel3">
-        <h2>Who?</h2>
-        <p>Built by <a href="http://twitter.com/amatix">Rob Coup</a> for the
-        2011 <a href="http://www.mixandmash.org.nz">Mix &amp; Mash</a> competition.</p>
-        <p>Data sourced from <a href="http://www.maxx.co.nz/">Auckland Transport</a></p>
-        <p>Follow <a href="http://twitter.com/TravelDash">@TravelDash</a> for updates.</p>
-    </div>
-</div>    
+  </div>
 {% endblock content %}

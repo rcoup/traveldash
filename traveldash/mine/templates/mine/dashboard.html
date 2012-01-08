@@ -11,20 +11,22 @@
 
 {% block header %}{% endblock %}
 
-{% block main %}
+{% block content %}
+  <div class="content">
+    <div class="page-header">
+      {% if request.user == dashboard.user %}
+      <p class="headLinks">
+        <a href="{{ dashboard.get_edit_url }}" class="btn small">Edit</a>
+      </p>
+      {% endif %}
+      <h1>
+        {{ dashboard.name }}
+        {% if request.user != dashboard.user %}
+          <em>by {{dashboard.user}}</em>
+        {% endif %}
+      </h1>
+    </div>
     <table>
-        <caption>
-            {% if request.user == dashboard.user %}
-            <div class="editLinks">
-                <a href="{% url traveldash.mine.views.dashboard_edit dashboard.pk %}">Edit</a>
-                <br/>
-                <a href="{% url traveldash.mine.views.dashboard_list %}">My Dashboards</a>
-            </div>
-            {% endif %}
-        
-            <h1>{{ dashboard.name }}</h1>
-        </caption>
-
         <thead>
             <th class="mode">&nbsp;</th>
             <th class="code">&nbsp;</th>
@@ -34,6 +36,7 @@
         </thead>
         <tbody id="schedule"><tbody>
     </table>
+  </div>
 {% endblock %}
 
 {% block extrabody %}

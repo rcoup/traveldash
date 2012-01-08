@@ -1,71 +1,80 @@
-<!doctype html>
-<html class="{% block htmlclass%}{% endblock %}">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  {% block metahead %}
-  <meta name="viewport" content="user-scalable=no,width=device-width" />
-  {% endblock metahead %}
+<!DOCTYPE html>
+<html lang="en" class="{% block htmlclass%}{% endblock %}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    {% block metahead %}{% endblock %}
+    <title>{% block title %}{{title}}{% endblock %}</title>
 
-  <title>{% block title %}{{title}}{% endblock %}</title>
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 
-  <link href="{{STATIC_URL}}css/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
-  <!--[if IE]>
-      <link href="{{STATIC_URL}}css/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
-  <![endif]-->
-  <script src="{{STATIC_URL}}js/libs/modernizr-2.0.6.min.js"></script>
-  
-  {% block extrahead %}{% endblock %}
-</head>
+    <!-- Le styles -->
+    <link href="{{STATIC_URL}}css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{STATIC_URL}}css/traveldash.css" rel="stylesheet">
+    <script src="{{STATIC_URL}}js/libs/modernizr-2.0.6.min.js"></script>
+    <style type="text/css">
+      body {
+      }
+    </style>
 
-<body>
-  <div id="container">
-{% block content %}
-    <header>
-	  <div id="header">
-{% block header %}
-		<h1>{{title}}</h1>
-{% endblock %}
-{% block messages %}
-		{% if messages %}
-		<ul class="messages">
-		  {% for message in messages %}
-		  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-		  {% endfor %}
-		</ul>
-		{% endif %}
-{% endblock %}
-	  </div>
-    </header>
-    <div id="main" role="main">
-{% block main %}{% endblock %}
-    </div>
-    <footer>
-{% block footer %}{% endblock %}
-    </footer>
-{% endblock content %}
-  </div>
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="{{STATIC_URL}}images/favicon.ico">
+    <link rel="apple-touch-icon" href="{{STATIC_URL}}images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{STATIC_URL}}images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="{{STATIC_URL}}images/apple-touch-icon-114x114.png">
+  </head>
 
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-  <script>window.jQuery || document.write('<script src="{{STATIC_URL}}js/libs/jquery-1.6.2.min.js"><\/script>')</script>
+  <body>
 
-  <script defer src="{{STATIC_URL}}js/plugins.js"></script>
-  <script defer src="{{STATIC_URL}}js/script.js"></script>
+    {% include "menu.html" %}
 
-  {% if GOOGLE_ANALYTICS_KEY %}
-  <script>
-    window._gaq = [['_setAccount','{{ GOOGLE_ANALYTICS_KEY }}'],['_trackPageview'],['_trackPageLoadTime']];
-    Modernizr.load({
-      load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
-    });
-  </script>
-  {% endif %}
+    <div class="container">
 
-  <!--[if lt IE 7 ]>
-    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
-    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
-  <![endif]-->
-  
-  {% block extrabody %}{% endblock %}
-</body>
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert-message fade in {{ message.tags }}" data-alert="alert">
+            <a class="close" href="#">×</a>
+            <p>{{ message }}</p>
+          </div>
+        {% endfor %}
+      {% endif %}
+      
+      {% block content %}{% endblock content %}
+
+      <footer>
+        <p>&copy; <a href="http://twitter.com/amatix">Rob Coup</a>. Built for the
+        2011 <a href="http://www.mixandmash.org.nz">Mix &amp; Mash</a> competition. Follow <a href="http://twitter.com/TravelDash">@TravelDash</a> for updates.</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+    <!-- scripts -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{{STATIC_URL}}js/libs/jquery-1.6.2.min.js"><\/script>');</script>
+    <script defer src="{{STATIC_URL}}js/plugins.js"></script>
+    <script defer src="{{STATIC_URL}}js/script.js"></script>
+    
+    <script defer src="{{STATIC_URL}}js/libs/bootstrap-alerts.js"></script>
+    <script defer src="{{STATIC_URL}}js/libs/bootstrap-dropdown.js"></script>
+    <script defer src="{{STATIC_URL}}js/libs/bootstrap-twipsy.js"></script>
+
+    {% if GOOGLE_ANALYTICS_KEY %}
+    <script>
+      window._gaq = [['_setAccount','{{ GOOGLE_ANALYTICS_KEY }}'],['_trackPageview'],['_trackPageLoadTime']];
+      Modernizr.load({
+        load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
+      });
+    </script>
+    {% endif %}
+
+    <!--[if lt IE 7 ]>
+      <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+      <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+    <![endif]-->
+
+    {% block extrabody %}{% endblock %}
+  </body>
 </html>

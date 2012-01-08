@@ -1,24 +1,17 @@
 {% extends "base.html" %}
 
-{% load twitter_tags %}
-{% load facebook_tags %}
-
 {% block htmlclass%}{{super}} login{% endblock %}
 {% block title %}Sign In{% endblock %}
 
-{% block header %}
-    <h1>Sign In</h1>
-{% endblock %}
-
-{% block main %}
-    <p>Sign in using your Twitter or FaceBook account...</p>
-    <ul>
-        <li>{% twitter_button %}</li>
-        <li>{% facebook_button %}</li>
-    </ul>
-{% endblock %}
-
-{% block extrabody %}
-{{ block.super }}
-{% facebook_js %}
+{% block content %}
+  <div class="content">
+    <div class="page-header">
+      <h1>Sign In</h1>
+    </div>
+    <p>Use your Twitter or Facebook account to sign in and build your dashboards. No spam, ever.</p>
+    <p>
+    	<a href="{% url socialauth_begin backend='twitter' %}" class="btn large"><span class="twitterBtn">Twitter</span></a>
+    	&nbsp;
+    	<a href="{% url socialauth_begin backend='facebook' %}" class="btn large"><span class="facebookBtn">Facebook</span></a>
+    </p>
 {% endblock %}

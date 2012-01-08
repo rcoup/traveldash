@@ -3,11 +3,12 @@
 {% block htmlclass%}{{super}} dashboard_list{% endblock %}
 {% block title %}My Dashboards{% endblock %}
 
-{% block header %}
-    <h1>My Dashboards</h1>
-{% endblock %}
+{% block content %}
+  <div class="content">
+    <div class="page-header">
+      <h1>Your Dashboards</h1>
+    </div>
 
-{% block main %}
     <table>
         {% for dashboard in dashboard_list %}
             <tr>
@@ -18,5 +19,9 @@
             </tr>
         {% endfor %}
     </table>
-    <p><a href="{% url traveldash.mine.views.dashboard_create %}">Create a New Dashboard</a></p>
+
+    <p>
+        <a class="btn large" href="{% url traveldash.mine.views.dashboard_create %}">Create a New Dashboard</a>
+    </p>
+  </div>
 {% endblock %}

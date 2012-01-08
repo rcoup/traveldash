@@ -1,0 +1,86 @@
+body {
+    padding-top: 60px;
+}
+
+footer {
+	text-align: center;
+}
+
+.dashboard #schedule, 
+.dashboard .content th {
+	font-size: 23px;
+}
+.dashboard .twipsy {
+	font-size: 18px;
+}
+.dashboard h1 em {
+	font-size: 50%;
+}
+.dashboard .mode {
+	background-size: auto 28px;
+	background-repeat: no-repeat;
+	background-position: center 4px;
+	padding-left: 0;
+	padding-right: 0;
+	width: 28px;
+}
+.dashboard .routeType2 {
+	background-image: url("/static/img/routeType2.svg");
+}
+.dashboard .routeType3 {
+	background-image: url("/static/img/routeType3.svg");
+}
+.dashboard .routeType4 {
+	background-image: url("/static/img/routeType4.svg");
+}
+
+
+.dashboard_form .delete {
+	float: right;
+}
+.dashboard_form #map {
+	height: 250px;
+}
+.dashboard_form form .clearfix::after {
+	clear: left;
+}
+
+
+.headLinks {
+	float: right;
+	padding-top: 6px;
+}
+
+.twitterBtn,
+.facebookBtn {
+	padding-left: 27px;
+	background-repeat: no-repeat;
+	background-position: 0 50%;
+}
+.twitterBtn {
+	background-image: url('../img/twitter.png');
+}
+.facebookBtn {
+	background-image: url('../img/facebook.png');
+}
+
+#menu .profile {
+	color: white;
+	width: 220px;
+}
+#menu .profile img {
+	float: left;
+	padding: 4px 10px 0 0;
+}
+#menu .profile span {
+	font-size: 80%;
+}
+.clear {
+	clear: both;
+}
+#menu .dropdown-menu {
+	max-width: none;
+}
+#menu .admin {
+	color: red;
+}

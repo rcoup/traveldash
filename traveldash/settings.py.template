@@ -101,6 +101,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     "django.contrib.messages.context_processors.messages",
     "traveldash.context_processors.google_analytics",
+    "social_auth.context_processors.social_auth_by_type_backends",
 )
 
 INSTALLED_APPS = (
@@ -113,38 +114,42 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.gis',
     'django.contrib.staticfiles',
-    
+
     'south',
-    'socialregistration',
-    
+    'social_auth',
+    'gravatar',
+    'bootstrap',
+
     'traveldash.gtfs',
     'traveldash.mine',
 )
 
 AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.twitter.TwitterBackend',
+    'social_auth.backends.facebook.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
-    'socialregistration.auth.TwitterAuth',
-    'socialregistration.auth.FacebookAuth',
 )
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/mine/'
+LOGIN_ERROR_URL = '/login/error/'
 
 USE_ETAGS = True
 
 TWITTER_CONSUMER_KEY = ''
-TWITTER_CONSUMER_SECRET_KEY = ''
-TWITTER_REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token'
-TWITTER_ACCESS_TOKEN_URL = 'https://api.twitter.com/oauth/access_token'
-TWITTER_AUTHORIZATION_URL = 'https://api.twitter.com/oauth/authorize'
-
+TWITTER_CONSUMER_SECRET = ''
 FACEBOOK_APP_ID = ''
-FACEBOOK_API_KEY = ''
-FACEBOOK_SECRET_KEY = ''
+FACEBOOK_API_SECRET = ''
 
-SOCIALREGISTRATION_GENERATE_USERNAME = False
+SOCIAL_AUTH_ENABLED_BACKENDS = ('twitter', 'facebook',)
+SOCIAL_AUTH_ERROR_KEY = 'social_errors'
+SOCIAL_AUTH_UUID_LENGTH = 4
+SOCIAL_AUTH_ASSOCIATE_BY_MAIL = True
+SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/new/'
 
-GTFS_SOURCE_MODEL = 'gtfs.Source'
+GRAVATAR_DEFAULT_IMAGE = 'mm'
+
+GTFS_SOURCE_MODEL = 'mine.GTFSSource'
 GTFS_STOP_FUSION_TABLE_ID = 000000
 
 GOOGLE_ANALYTICS_KEY = ''
