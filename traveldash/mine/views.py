@@ -4,7 +4,7 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.views.decorators.cache import cache_control
 from django.views.decorators.vary import vary_on_cookie
-from django.views.generic import ListView, DeleteView
+from django.views.generic import DeleteView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib import messages
@@ -21,6 +21,24 @@ from traveldash.gtfs.models import Route, Stop
 
 @vary_on_cookie
 def home(request):
+    if request.user.is_authenticated():
+        # if user is signed in, take them to their most recent
+        # dashboard unless they have a referer (ie. they didn't type it)
+        referer = request.META.get('HTTP_REFERER')
+        # if we've never seen a referer from this user, then don't do a
+        # redirect
+        if (not referer) and request.session.get('seen_http_referer', False):
+            dash_pk = request.session.get('td_last_dashboard')
+            # fallback: dashboard list
+            redirect = reverse('traveldash.mine.views.dashboard_list')
+            if dash_pk:
+                try:
+                    dashboard = Dashboard.objects.filter(user=request.user).get(pk=dash_pk)
+                    redirect = dashboard.get_absolute_url()
+                except Dashboard.DoesNotExist:
+                    pass
+            return HttpResponseRedirect(redirect)
+
     example_dashboard = Dashboard.objects.order_by('?')[0]
     return TemplateResponse(request, "mine/home.html", {'example_dashboard': example_dashboard})
 
@@ -36,6 +54,8 @@ def dashboard(request, pk):
     except Dashboard.DoesNotExist:
         raise Http404
 
+    if request.user == dashboard.user:
+        request.session['td_last_dashboard'] = dashboard.pk
     return TemplateResponse(request, "mine/dashboard.html", {'dashboard': dashboard})
 
 

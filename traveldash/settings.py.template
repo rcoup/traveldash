@@ -55,7 +55,7 @@ MEDIA_URL = '/media/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/admin/media/'
+#ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'SECRET'
@@ -71,10 +71,10 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'traveldash.mine.middleware.SeenHttpReferer',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'socialregistration.middleware.FacebookMiddleware',
 )
 
 ROOT_URLCONF = 'traveldash.urls'
@@ -138,6 +138,7 @@ USE_ETAGS = True
 
 TWITTER_CONSUMER_KEY = ''
 TWITTER_CONSUMER_SECRET = ''
+
 FACEBOOK_APP_ID = ''
 FACEBOOK_API_SECRET = ''
 
@@ -150,6 +151,6 @@ SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/new/'
 GRAVATAR_DEFAULT_IMAGE = 'mm'
 
 GTFS_SOURCE_MODEL = 'mine.GTFSSource'
-GTFS_STOP_FUSION_TABLE_ID = 000000
+GTFS_STOP_FUSION_TABLE_ID = 0
 
 GOOGLE_ANALYTICS_KEY = ''
