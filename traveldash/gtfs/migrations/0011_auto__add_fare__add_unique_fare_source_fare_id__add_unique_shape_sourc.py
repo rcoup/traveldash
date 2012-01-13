@@ -4,10 +4,11 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'Fare'
         db.create_table('gtfs_fare', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -57,9 +58,8 @@ class Migration(SchemaMigration):
         # Adding field 'FareRule.fare'
         db.add_column('gtfs_farerule', 'fare', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['gtfs.Fare']), keep_default=False)
 
-
     def backwards(self, orm):
-        
+
         # Removing unique constraint on 'Zone', fields ['source', 'zone_id']
         db.delete_unique('gtfs_zone', ['source_id', 'zone_id'])
 
@@ -98,7 +98,6 @@ class Migration(SchemaMigration):
 
         # Deleting field 'FareRule.fare'
         db.delete_column('gtfs_farerule', 'fare_id')
-
 
     models = {
         'gtfs.agency': {

@@ -4,10 +4,11 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding field 'DashboardRoute.from_stop_code'
         db.add_column('mine_dashboardroute', 'from_stop_code', self.gf('django.db.models.fields.CharField')(default='', max_length=20), keep_default=False)
 
@@ -35,7 +36,7 @@ class Migration(SchemaMigration):
             dr.save()
 
     def backwards(self, orm):
-        
+
         # Deleting field 'DashboardRoute.from_stop_code'
         db.delete_column('mine_dashboardroute', 'from_stop_code')
 
@@ -56,7 +57,6 @@ class Migration(SchemaMigration):
 
         # Changing field 'Dashboard.warning_time'
         db.alter_column('mine_dashboard', 'warning_time', self.gf('django.db.models.fields.IntegerField')())
-
 
     models = {
         'auth.group': {

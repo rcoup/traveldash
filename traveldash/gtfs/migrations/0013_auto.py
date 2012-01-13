@@ -4,19 +4,18 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding index on 'UniversalCalendar', fields ['date']
         db.create_index('gtfs_universalcalendar', ['date'])
 
-
     def backwards(self, orm):
-        
+
         # Removing index on 'UniversalCalendar', fields ['date']
         db.delete_index('gtfs_universalcalendar', ['date'])
-
 
     models = {
         'gtfs.agency': {

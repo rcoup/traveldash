@@ -4,10 +4,11 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Deleting model 'PaymentMethod'
         db.delete_table('gtfs_paymentmethod')
 
@@ -111,9 +112,8 @@ class Migration(SchemaMigration):
         # Removing index on 'StopTime', fields ['drop_off_type']
         db.delete_index('gtfs_stoptime', ['drop_off_type_id'])
 
-
     def backwards(self, orm):
-        
+
         # Adding index on 'StopTime', fields ['drop_off_type']
         db.create_index('gtfs_stoptime', ['drop_off_type_id'])
 
@@ -253,7 +253,6 @@ class Migration(SchemaMigration):
         db.rename_column('gtfs_stoptime', 'drop_off_type', 'drop_off_type_id')
         # Changing field 'StopTime.drop_off_type'
         db.alter_column('gtfs_stoptime', 'drop_off_type_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['gtfs.Arrangement']))
-
 
     models = {
         'gtfs.agency': {

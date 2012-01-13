@@ -4,10 +4,11 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Deleting field 'Trip.inbound'
         db.delete_column('gtfs_trip', 'inbound')
 
@@ -17,9 +18,8 @@ class Migration(SchemaMigration):
         # Adding field 'Trip.direction_id'
         db.add_column('gtfs_trip', 'direction_id', self.gf('django.db.models.fields.IntegerField')(null=True), keep_default=False)
 
-
     def backwards(self, orm):
-        
+
         # Adding field 'Trip.inbound'
         db.add_column('gtfs_trip', 'inbound', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
 
@@ -28,7 +28,6 @@ class Migration(SchemaMigration):
 
         # Deleting field 'Trip.direction_id'
         db.delete_column('gtfs_trip', 'direction_id')
-
 
     models = {
         'gtfs.agency': {

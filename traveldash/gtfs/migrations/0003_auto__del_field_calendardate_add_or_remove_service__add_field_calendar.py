@@ -4,25 +4,24 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Deleting field 'CalendarDate.add_or_remove_service'
         db.delete_column('gtfs_calendardate', 'add_or_remove_service')
 
         # Adding field 'CalendarDate.exception_type'
         db.add_column('gtfs_calendardate', 'exception_type', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
 
-
     def backwards(self, orm):
-        
+
         # Adding field 'CalendarDate.add_or_remove_service'
         db.add_column('gtfs_calendardate', 'add_or_remove_service', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
 
         # Deleting field 'CalendarDate.exception_type'
         db.delete_column('gtfs_calendardate', 'exception_type')
-
 
     models = {
         'gtfs.agency': {

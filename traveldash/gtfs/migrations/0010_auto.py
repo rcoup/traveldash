@@ -4,10 +4,11 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding index on 'Stop', fields ['location_type']
         db.create_index('gtfs_stop', ['location_type'])
 
@@ -17,9 +18,8 @@ class Migration(SchemaMigration):
         # Adding index on 'CalendarDate', fields ['exception_type']
         db.create_index('gtfs_calendardate', ['exception_type'])
 
-
     def backwards(self, orm):
-        
+
         # Removing index on 'CalendarDate', fields ['exception_type']
         db.delete_index('gtfs_calendardate', ['exception_type'])
 
@@ -28,7 +28,6 @@ class Migration(SchemaMigration):
 
         # Removing index on 'Stop', fields ['location_type']
         db.delete_index('gtfs_stop', ['location_type'])
-
 
     models = {
         'gtfs.agency': {

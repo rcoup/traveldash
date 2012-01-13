@@ -35,7 +35,6 @@ class Migration(SchemaMigration):
         # Changing field 'Shape.source'
         db.alter_column('gtfs_shape', 'source_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['mine.GTFSSource'], null=True))
 
-
     def backwards(self, orm):
 
         # Adding model 'Source'
@@ -65,7 +64,6 @@ class Migration(SchemaMigration):
 
         # Changing field 'Shape.source'
         db.alter_column('gtfs_shape', 'source_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['gtfs.Source'], null=True))
-
 
     models = {
         'auth.group': {

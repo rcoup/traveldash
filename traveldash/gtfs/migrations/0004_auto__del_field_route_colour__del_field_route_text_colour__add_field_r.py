@@ -4,10 +4,11 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Deleting field 'Route.colour'
         db.delete_column('gtfs_route', 'colour')
 
@@ -20,9 +21,8 @@ class Migration(SchemaMigration):
         # Adding field 'Route.text_color'
         db.add_column('gtfs_route', 'text_color', self.gf('django.db.models.fields.TextField')(default=''), keep_default=False)
 
-
     def backwards(self, orm):
-        
+
         # User chose to not deal with backwards NULL issues for 'Route.colour'
         raise RuntimeError("Cannot reverse this migration. 'Route.colour' and its values cannot be restored.")
 
@@ -34,7 +34,6 @@ class Migration(SchemaMigration):
 
         # Deleting field 'Route.text_color'
         db.delete_column('gtfs_route', 'text_color')
-
 
     models = {
         'gtfs.agency': {

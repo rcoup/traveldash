@@ -3,9 +3,10 @@ from django.contrib.gis.admin import OSMGeoAdmin
 
 from traveldash.gtfs.models import *
 
+
 class ReadOnlyAdminMixin(object):
     _rw_fields = ()
-    
+
     def has_add_permission(self, request):
         return False
 
@@ -38,9 +39,10 @@ class ReadOnlyAdminMixin(object):
             self._readonly_fields = modelform_factory(self.model, **defaults).base_fields
         return self._readonly_fields.keys()
 
-    
+
 class ReadOnlyModelAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
     pass
+
 
 class ReadOnlyOSMGeoAdmin(ReadOnlyAdminMixin, OSMGeoAdmin):
     modifiable = False
@@ -49,13 +51,14 @@ class ReadOnlyOSMGeoAdmin(ReadOnlyAdminMixin, OSMGeoAdmin):
         from django.contrib.gis.forms import GeometryField
         if not hasattr(self, '_readonly_fields'):
             super(ReadOnlyOSMGeoAdmin, self).get_readonly_fields(request, obj)
-    
-            for field_name,field in self._readonly_fields.items():
+
+            for field_name, field in self._readonly_fields.items():
                 if isinstance(field, GeometryField):
                     if field_name not in self.readonly_fields:
                         del self._readonly_fields[field_name]
-        
+
         return super(ReadOnlyOSMGeoAdmin, self).get_readonly_fields(request, obj)
+
 
 class StopAdmin(ReadOnlyOSMGeoAdmin):
     search_fields = ('code', 'name', 'desc')

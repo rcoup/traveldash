@@ -4,19 +4,18 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Changing field 'GTFSSource.update_freq'
         db.alter_column('mine_gtfssource', 'update_freq', self.gf('django.db.models.fields.IntegerField')())
 
-
     def backwards(self, orm):
-        
+
         # Changing field 'GTFSSource.update_freq'
         db.alter_column('mine_gtfssource', 'update_freq', self.gf('django.db.models.fields.IntegerField')(null=True))
-
 
     models = {
         'auth.group': {

@@ -4,10 +4,11 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Deleting model 'DestinationFareRules'
         db.delete_table('gtfs_destinationfarerules')
 
@@ -81,9 +82,8 @@ class Migration(SchemaMigration):
         # Changing field 'StopTime.drop_off_type'
         db.alter_column('gtfs_stoptime', 'drop_off_type_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['gtfs.Arrangement']))
 
-
     def backwards(self, orm):
-        
+
         # Adding model 'DestinationFareRules'
         db.create_table('gtfs_destinationfarerules', (
             ('zone', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['gtfs.Zone'])),
@@ -156,7 +156,6 @@ class Migration(SchemaMigration):
 
         # Changing field 'StopTime.drop_off_type'
         db.alter_column('gtfs_stoptime', 'drop_off_type_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['gtfs.Arrangements']))
-
 
     models = {
         'gtfs.agency': {

@@ -4,16 +4,16 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Deleting model 'TransferPermission'
         db.delete_table('gtfs_transferpermission')
 
-
     def backwards(self, orm):
-        
+
         # Adding model 'TransferPermission'
         db.create_table('gtfs_transferpermission', (
             ('ntransfers', self.gf('django.db.models.fields.IntegerField')()),
@@ -22,7 +22,6 @@ class Migration(SchemaMigration):
             ('desc', self.gf('django.db.models.fields.TextField')()),
         ))
         db.send_create_signal('gtfs', ['TransferPermission'])
-
 
     models = {
         'gtfs.agency': {

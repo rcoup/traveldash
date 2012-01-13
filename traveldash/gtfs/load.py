@@ -9,11 +9,12 @@ from django.db import transaction
 
 from traveldash.gtfs.models import *
 
+
 def main():
     parser = OptionParser()
     parser.add_option("--source", action="store", dest="source_id", type="int", metavar="SOURCE_ID", help="ID of a Source object to relate the imported data to")
-    
-    options,args = parser.parse_args()
+
+    options, args = parser.parse_args()
     if not len(args) == 1:
         parser.error("Need to specify exactly one zip file")
 
@@ -25,6 +26,7 @@ def main():
     loader = transaction.commit_on_success(load_zip)
     loader(args[0], source)
 
+
 def load_zip(zip_file, source):
     temp_dir = tempfile.mkdtemp()
     try:
@@ -35,6 +37,7 @@ def load_zip(zip_file, source):
         load(temp_dir, source)
     finally:
         shutil.rmtree(temp_dir)
+
 
 def load(temp_dir, source):
     # load GTFS data files & transform/derive additional data

@@ -8,10 +8,11 @@ from django.core.management.base import BaseCommand, make_option, CommandError
 from django.db import transaction
 from django.conf import settings
 
+
 class Command(BaseCommand):
     help = "Updates GTFS data from a zip file"
     args = "ZIP"
-    
+
     def handle(self, *args, **options):
         if len(args) != 1 or not os.path.exists(args[0]):
             raise CommandError("zip file not found")
@@ -27,13 +28,13 @@ class Command(BaseCommand):
     def update_models(self, zip_file):
         from traveldash.mine.models import DashboardRoute
         from traveldash.gtfs import load
-        
+
         print "Unlinking dashboard stops..."
         DashboardRoute.objects.unlink_stops()
-        
+
         # do the load
         load.load_zip(zip_file, None)
-        
+
         print "Re-linking dashboard stops..."
         DashboardRoute.objects.relink_stops()
 
@@ -71,8 +72,8 @@ class Command(BaseCommand):
         urllib2.urlopen(req)
 
         print "Adding new rows..."
-        for j,chunk in enumerate([inserts[i:i+500] for i in range(0, len(inserts), 500)]):
-            print "  %d-%d..." % (j*500+1, (j+1)*500)
+        for j, chunk in enumerate([inserts[i: i + 500] for i in range(0, len(inserts), 500)]):
+            print "  %d-%d..." % (j * 500 + 1, (j + 1) * 500)
             req_data = {
                 'sql': '\n'.join(chunk),
             }

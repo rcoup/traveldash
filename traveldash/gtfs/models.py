@@ -11,6 +11,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.loading import get_model
 
+
 class GTFSModel(object):
     """ Loading behaviour for GTFS files """
 
@@ -88,7 +89,7 @@ class GTFSModel(object):
 
         matched = []
         errors = []
-        for k,v in row.items():
+        for k, v in row.items():
             if isinstance(v, basestring):
                 v = v.strip()
             if k.endswith('date'):
@@ -143,7 +144,7 @@ class GTFSModel(object):
     def gtfs_parse_hms(cls, v):
         if v == '': return None
         h, m, s = map(int, v.split(':'))
-        return h*3600 + m*60 + s
+        return h * 3600 + m * 60 + s
 
     @classmethod
     def gtfs_parse_hms_days(cls, v):
@@ -209,6 +210,7 @@ class Agency(models.Model, GTFSModel):
     def __unicode__(self):
         return unicode(self.name)
 
+
 class StopManager(models.GeoManager):
     def write_fusion_tables_csv(self, filename):
         with open(filename, 'wb') as f:
@@ -224,6 +226,7 @@ class StopManager(models.GeoManager):
                 stop.name.encode('utf8'),
                 '%0.5f %0.5f' % (stop.location.y, stop.location.x),
             )
+
 
 class Stop(models.Model, GTFSModel):
     LOCATION_TYPES = (
@@ -258,18 +261,19 @@ class Stop(models.Model, GTFSModel):
 
         return ('stop_lon', 'stop_lat', 'zone_id',)
 
-
     def __unicode__(self):
         if self.code:
             return u"%s: %s" % (self.code, self.name)
         else:
             return unicode(self.name)
 
+
 class RouteManager(models.Manager):
     def between_stops(self, from_stop, to_stop):
         """ Return all the Routes running between the specified stops """
         trips = Trip.objects.between_stops(from_stop, to_stop)
         return self.get_query_set().filter(trips__in=trips).distinct()
+
 
 class Route(models.Model, GTFSModel):
     TRAM = 0
@@ -308,6 +312,7 @@ class Route(models.Model, GTFSModel):
     def __unicode__(self):
         return u"%s: %s %s" % (self.get_route_type_display(), self.short_name, self.long_name)
 
+
 class Block(models.Model, GTFSModel):
     source = models.ForeignKey(settings.GTFS_SOURCE_MODEL, null=True, db_index=True)
     block_id = models.TextField(max_length=20, db_index=True)
@@ -318,6 +323,7 @@ class Block(models.Model, GTFSModel):
     def __unicode__(self):
         return unicode(self.block_id)
 
+
 class TripManager(models.Manager):
     def between_stops(self, from_stop, to_stop):
         """ Return all the Trips running between the specified stops """
@@ -327,6 +333,7 @@ class TripManager(models.Manager):
 
     def for_dates(self, *dates):
         return self.get_query_set().filter(service__all_dates__date__in=dates)
+
 
 class Trip(models.Model, GTFSModel):
     OUTBOUND = 0
@@ -359,6 +366,7 @@ class Trip(models.Model, GTFSModel):
 
     def __unicode__(self):
         return u"%s %s (%s)" % (self.route, self.get_direction_id_display(), self.service.service_id)
+
 
 class StopTime(models.Model, GTFSModel):
     PICKUP = 0
@@ -416,6 +424,7 @@ class StopTime(models.Model, GTFSModel):
         dt += datetime.timedelta(seconds=self.arrival_time, days=self.arrival_days)
         return dt
 
+
 class Service(models.Model, GTFSModel):
     source = models.ForeignKey(settings.GTFS_SOURCE_MODEL, null=True, db_index=True)
     service_id = models.TextField(max_length=20, db_index=True)
@@ -425,6 +434,7 @@ class Service(models.Model, GTFSModel):
 
     def __unicode__(self):
         return unicode(self.service_id)
+
 
 class Calendar(models.Model, GTFSModel):
     GTFS_FILENAME = 'calendar.txt'
@@ -454,7 +464,7 @@ class Calendar(models.Model, GTFSModel):
     @property
     def weekdays(self):
         days = []
-        for index,weekday in enumerate(('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday')):
+        for index, weekday in enumerate(('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday')):
             if getattr(self, weekday):
                 days.append(index)
         return tuple(days)
@@ -467,6 +477,7 @@ class Calendar(models.Model, GTFSModel):
             if d.weekday() in weekdays:
                 yield d
             d += delta
+
 
 class CalendarDate(models.Model, GTFSModel):
     ADDED = 1
@@ -498,6 +509,7 @@ class CalendarDate(models.Model, GTFSModel):
     def is_removed(self):
         return self.exception_type == self.REMOVED
 
+
 class Fare(models.Model, GTFSModel):
     GTFS_FILENAME = 'fare_attributes.txt'
     PAYMENT_METHODS = (
@@ -521,6 +533,7 @@ class Fare(models.Model, GTFSModel):
     class Meta:
         unique_together = (("source", "fare_id"))
 
+
 class FareRule(models.Model, GTFSModel):
     fare = models.ForeignKey('Fare', related_name='rules')
     route = models.ForeignKey('Route', null=True, related_name='fare_rules')
@@ -540,12 +553,14 @@ class FareRule(models.Model, GTFSModel):
 
         return ('origin_id', 'destination_id', 'contains_id')
 
+
 class Zone(models.Model, GTFSModel):
     source = models.ForeignKey(settings.GTFS_SOURCE_MODEL, null=True, db_index=True)
     zone_id = models.TextField(max_length=20, db_index=True)
 
     class Meta:
         unique_together = (("source", "zone_id"))
+
 
 class Shape(models.Model, GTFSModel):
     source = models.ForeignKey(settings.GTFS_SOURCE_MODEL, null=True, db_index=True)
@@ -592,6 +607,7 @@ class Shape(models.Model, GTFSModel):
 #    reverse = models.BooleanField()
 #    position = models.IntegerField()
 
+
 class Frequency(models.Model, GTFSModel):
     trip = models.ForeignKey('Trip', related_name='frequencies')
     start_time = models.IntegerField(null=True)
@@ -609,6 +625,7 @@ class Frequency(models.Model, GTFSModel):
         o.end_time, o.end_time_days = cls.gtfs_parse_hms_days(row['end_time'])
         return ('start_time', 'end_time')
 
+
 class Transfer(models.Model, GTFSModel):
     TRANSFER_TYPES = (
         (0, "This is a recommended transfer point between two routes."),
@@ -620,6 +637,7 @@ class Transfer(models.Model, GTFSModel):
     to_stop = models.ForeignKey('Stop', related_name='transfers_to')
     transfer_type = models.IntegerField(choices=TRANSFER_TYPES, default=0)
     min_transfer_time = models.IntegerField(null=True)
+
 
 class UniversalCalendar(models.Model):
     service = models.ForeignKey('Service', related_name='all_dates')

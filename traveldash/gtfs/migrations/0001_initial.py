@@ -4,10 +4,11 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'Source'
         db.create_table('gtfs_source', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -274,9 +275,8 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('gtfs', ['Transfers'])
 
-
     def backwards(self, orm):
-        
+
         # Removing unique constraint on 'Service', fields ['source', 'service_id']
         db.delete_unique('gtfs_service', ['source_id', 'service_id'])
 
@@ -369,7 +369,6 @@ class Migration(SchemaMigration):
 
         # Deleting model 'Transfers'
         db.delete_table('gtfs_transfers')
-
 
     models = {
         'gtfs.agency': {

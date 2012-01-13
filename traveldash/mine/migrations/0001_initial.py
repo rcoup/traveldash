@@ -4,10 +4,11 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'Dashboard'
         db.create_table('mine_dashboard', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -40,9 +41,8 @@ class Migration(SchemaMigration):
         ))
         db.create_unique('mine_dashboardroute_routes', ['dashboardroute_id', 'route_id'])
 
-
     def backwards(self, orm):
-        
+
         # Deleting model 'Dashboard'
         db.delete_table('mine_dashboard')
 
@@ -51,7 +51,6 @@ class Migration(SchemaMigration):
 
         # Removing M2M table for field routes on 'DashboardRoute'
         db.delete_table('mine_dashboardroute_routes')
-
 
     models = {
         'auth.group': {

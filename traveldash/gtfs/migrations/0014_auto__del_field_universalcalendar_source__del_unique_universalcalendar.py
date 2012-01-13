@@ -4,10 +4,11 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Removing unique constraint on 'UniversalCalendar', fields ['date', 'source', 'service']
         db.delete_unique('gtfs_universalcalendar', ['date', 'source_id', 'service_id'])
 
@@ -17,9 +18,8 @@ class Migration(SchemaMigration):
         # Adding unique constraint on 'UniversalCalendar', fields ['date', 'service']
         db.create_unique('gtfs_universalcalendar', ['date', 'service_id'])
 
-
     def backwards(self, orm):
-        
+
         # Removing unique constraint on 'UniversalCalendar', fields ['date', 'service']
         db.delete_unique('gtfs_universalcalendar', ['date', 'service_id'])
 
@@ -28,7 +28,6 @@ class Migration(SchemaMigration):
 
         # Adding unique constraint on 'UniversalCalendar', fields ['date', 'source', 'service']
         db.create_unique('gtfs_universalcalendar', ['date', 'source_id', 'service_id'])
-
 
     models = {
         'gtfs.agency': {

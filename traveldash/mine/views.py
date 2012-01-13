@@ -24,8 +24,10 @@ def home(request):
     example_dashboard = Dashboard.objects.order_by('?')[0]
     return TemplateResponse(request, "mine/home.html", {'example_dashboard': example_dashboard})
 
+
 def login(request):
     return TemplateResponse(request, "login.html")
+
 
 @vary_on_cookie
 def dashboard(request, pk):
@@ -35,6 +37,7 @@ def dashboard(request, pk):
         raise Http404
 
     return TemplateResponse(request, "mine/dashboard.html", {'dashboard': dashboard})
+
 
 @vary_on_cookie
 @cache_control(must_revalidate=True)
@@ -46,6 +49,7 @@ def dashboard_update(request, pk):
 
     content = dashboard.as_json()
     return HttpResponse(json.dumps(content), content_type="application/json")
+
 
 @login_required
 def dashboard_list(request):
@@ -112,7 +116,8 @@ def dashboard_create(request):
     else:
         form = DashboardForm()
         route_formset = RouteFormSet(instance=Dashboard())
-    return TemplateResponse(request, "mine/dashboard_form.html", {'form': form, 'route_formset': route_formset, 'title':'New Dashboard', 'stopFusionTableId': settings.GTFS_STOP_FUSION_TABLE_ID})
+    return TemplateResponse(request, "mine/dashboard_form.html", {'form': form, 'route_formset': route_formset, 'title': 'New Dashboard', 'stopFusionTableId': settings.GTFS_STOP_FUSION_TABLE_ID})
+
 
 @login_required
 def dashboard_edit(request, pk):
@@ -140,10 +145,11 @@ def dashboard_edit(request, pk):
     else:
         form = DashboardForm(instance=dashboard)
         route_formset = RouteFormSet(instance=dashboard)
-    return TemplateResponse(request, "mine/dashboard_form.html", {'form': form, 'route_formset': route_formset, 'title':'Edit Dashboard', 'dashboard': dashboard, 'stopFusionTableId': settings.GTFS_STOP_FUSION_TABLE_ID})
+    return TemplateResponse(request, "mine/dashboard_form.html", {'form': form, 'route_formset': route_formset, 'title': 'Edit Dashboard', 'dashboard': dashboard, 'stopFusionTableId': settings.GTFS_STOP_FUSION_TABLE_ID})
+
 
 class DashboardDelete(DeleteView):
-    context_object_name="dashboard"
+    context_object_name = "dashboard"
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):

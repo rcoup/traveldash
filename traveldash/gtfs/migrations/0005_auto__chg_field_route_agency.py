@@ -4,19 +4,18 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Changing field 'Route.agency'
         db.alter_column('gtfs_route', 'agency_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['gtfs.Agency'], null=True))
 
-
     def backwards(self, orm):
-        
+
         # User chose to not deal with backwards NULL issues for 'Route.agency'
         raise RuntimeError("Cannot reverse this migration. 'Route.agency' and its values cannot be restored.")
-
 
     models = {
         'gtfs.agency': {

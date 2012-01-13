@@ -4,25 +4,24 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Deleting field 'Shape.line_string'
         db.delete_column('gtfs_shape', 'line_string')
 
         # Adding field 'Shape.path'
         db.add_column('gtfs_shape', 'path', self.gf('django.contrib.gis.db.models.fields.LineStringField')(null=True), keep_default=False)
 
-
     def backwards(self, orm):
-        
+
         # Adding field 'Shape.line_string'
         db.add_column('gtfs_shape', 'line_string', self.gf('django.contrib.gis.db.models.fields.LineStringField')(null=True), keep_default=False)
 
         # Deleting field 'Shape.path'
         db.delete_column('gtfs_shape', 'path')
-
 
     models = {
         'gtfs.agency': {

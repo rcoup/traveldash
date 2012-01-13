@@ -95,7 +95,7 @@ class Dashboard(models.Model):
             for trip, dep, arr in route.next_with_arrivals(start_time, count):
                 next.append((route, trip, dep, arr))
 
-        return sorted(next, key=lambda x: x[2]-timedelta(minutes=x[0].walk_time_start))[:count]
+        return sorted(next, key=lambda x: x[2] - timedelta(minutes=x[0].walk_time_start))[:count]
 
     def as_json(self):
         c = {
@@ -129,6 +129,7 @@ class Dashboard(models.Model):
             })
         return c
 
+
 class DashboardRouteManager(models.Manager):
     def unlink_stops(self):
         for dr in DashboardRoute.objects.all():
@@ -141,6 +142,7 @@ class DashboardRouteManager(models.Manager):
             dr.from_stop = Stop.objects.get(code=dr.from_stop_code)
             dr.to_stop = Stop.objects.get(code=dr.to_stop_code)
             dr.save()
+
 
 class DashboardRoute(models.Model):
     dashboard = models.ForeignKey(Dashboard, related_name='routes')
@@ -222,4 +224,3 @@ class DashboardRoute(models.Model):
 
 pre_save.connect(DashboardRoute.update_stops, sender=DashboardRoute)
 post_save.connect(DashboardRoute.update_routes, sender=DashboardRoute)
-
