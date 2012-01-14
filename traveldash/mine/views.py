@@ -107,6 +107,8 @@ class RouteForm(BootstrapModelForm):
         })
 
     def _stop_info(self, stop_id):
+        if not stop_id:
+            return None
         try:
             stop = Stop.objects.get(pk=stop_id)
             return {'id': stop.pk, 'name': stop.name, 'location': stop.location.tuple}
