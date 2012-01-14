@@ -102,3 +102,9 @@ footer {
 #menu .admin {
 	color: red;
 }
+
+/* until there's some content above the table */
+.dashboard_list .content tr:first-child th,
+.dashboard_list .content tr:first-child td {
+	border-top-width: 0;
+}

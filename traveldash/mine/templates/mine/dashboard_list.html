@@ -12,10 +12,9 @@
     <table>
         {% for dashboard in dashboard_list %}
             <tr>
-                <th>{{ dashboard.name }}</th>
-                <td><a class="viewLink" href="{{ dashboard.get_absolute_url }}">View</a></td>
-                <td><a class="editLink" href="{{ dashboard.get_edit_url }}">Edit</a></td>
+                <th><a href="{{ dashboard.get_absolute_url }}">{{ dashboard.name }}</a></th>
                 <td class="copyLink">Link: <a href="{{base_url}}{{dashboard.get_absolute_url}}">{{base_url}}{{dashboard.get_absolute_url}}</a></td>
+                <td><a class="btn" href="{{ dashboard.get_edit_url }}">Edit</a></td>
             </tr>
         {% endfor %}
     </table>
