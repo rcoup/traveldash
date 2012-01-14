@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load traveldash %}
 
 {% block htmlclass%}{{block.super}} dashboard{% endblock %}
 {% block title %}{{dashboard.name}}{% endblock %}
@@ -14,27 +15,45 @@
 {% block content %}
   <div class="content">
     <div class="page-header">
-      {% if request.user == dashboard.user %}
+      {% if is_owner %}
       <p class="headLinks">
         <a href="{{ dashboard.get_edit_url }}" class="btn small">Edit</a>
       </p>
       {% endif %}
       <h1>
         {{ dashboard.name }}
-        {% if request.user != dashboard.user %}
+        {% if not is_owner %}
           <em>by {{dashboard.user}}</em>
         {% endif %}
       </h1>
     </div>
     <table>
         <thead>
-            <th class="mode">&nbsp;</th>
-            <th class="code">&nbsp;</th>
-            <th class="name">Route</th>
-            <th class="departs">Departs in</th>
-            <th class="arrives">ETA</th>
+          <th class="mode">&nbsp;</th>
+          <th class="code">&nbsp;</th>
+          <th class="name">Route</th>
+          <th class="departs">Departs in</th>
+          <th class="arrives">ETA</th>
         </thead>
-        <tbody id="schedule"><tbody>
+        <tbody id="schedule"><tody>
+        <tfoot id="empty">
+          <td colspan="5">
+            <p>Uh oh, there don't seem to be any services in the next 24 hours on these routes. 
+            There could be service changes or interruptions - the links below might help. 
+            {% if is_owner %}Perhaps your stops moved and you need to <a href="{{dashboard.get_edit_url}}">edit your Dashboard</a>?{% endif %}
+            Or there could be a problem with Traveldash (please get in touch).</p>
+
+            <p>
+              {% for source in dashboard.sources %}
+              <a href="{{source.web_url}}" class="btn" target="_blank">{{source}}</a>  
+              {% endfor %}
+
+              {% if is_owner %}
+              <a href="{% help_tweet_url dashboard %}" class="btn tweet-link" target="_blank"><span class="twitterBtn">Contact TravelDash</span></a>
+              {% endif %}
+            </p>
+          </td>
+        <tfoot>
     </table>
   </div>
 {% endblock %}

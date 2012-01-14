@@ -54,9 +54,13 @@ def dashboard(request, pk):
     except Dashboard.DoesNotExist:
         raise Http404
 
+    context = {
+        'dashboard': dashboard,
+        'is_owner': (dashboard.user == request.user),
+    }
     if request.user == dashboard.user:
         request.session['td_last_dashboard'] = dashboard.pk
-    return TemplateResponse(request, "mine/dashboard.html", {'dashboard': dashboard})
+    return TemplateResponse(request, "mine/dashboard.html", context)
 
 
 @vary_on_cookie

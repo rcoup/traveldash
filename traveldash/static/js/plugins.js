@@ -18,3 +18,12 @@ window.log = function(){
 
 // place any jQuery/helper plugins in here, instead of separate, slower script files.
 
+$('.tweet-link').click(function(evt) {
+    var left = (screen.width/2)-(550/2);
+    var top = (screen.height/2)-(420/2);
+    var features = "top=" + top + ",left=" + left + ",width=550,height=420,toolbar=0,menubar=0,centerscreen=yes";
+    
+    window.open($(this).attr('href'), null, features);
+    evt.preventDefault();
+});
+

@@ -16,6 +16,14 @@ footer {
 .dashboard h1 em {
 	font-size: 50%;
 }
+.dashboard #schedule tr.warning {
+	color: #c43c35 !important;
+}
+.dashboard #schedule tr.missed,
+.dashboard #schedule tr.missed th {
+	color: #EDC4C2 !important;
+	font-size: 18px;
+}
 .dashboard .mode {
 	background-size: auto 28px;
 	background-repeat: no-repeat;
@@ -23,6 +31,11 @@ footer {
 	padding-left: 0;
 	padding-right: 0;
 	width: 28px;
+}
+.dashboard #schedule tr.missed .mode {
+	background-size: auto 23px;
+	width: 23px;
+	opacity: 0.3;
 }
 .dashboard .routeType2 {
 	background-image: url("/static/img/routeType2.svg");
@@ -33,8 +46,13 @@ footer {
 .dashboard .routeType4 {
 	background-image: url("/static/img/routeType4.svg");
 }
-
-
+.dashboard #empty {
+	display: none;
+}
+.dashboard #empty p {
+	font-size: 18px;
+	line-height: 23px;
+}
 .dashboard_form .delete {
 	float: right;
 }

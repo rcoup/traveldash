@@ -7,7 +7,7 @@ from django.db.models import Q, Min
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
-from traveldash.gtfs.models import Route, Trip, StopTime, Stop, SourceBase
+from traveldash.gtfs.models import Route, StopTime, Stop, SourceBase
 
 
 class GTFSSourceManager(models.Manager):
@@ -129,6 +129,9 @@ class Dashboard(models.Model):
             })
         return c
 
+    def sources(self):
+        return GTFSSource.objects.filter(pk__in=self.routes.values('routes__agency__source__pk').distinct().values_list('routes__agency__source__pk', flat=True))
+
 
 class DashboardRouteManager(models.Manager):
     def unlink_stops(self):
@@ -181,11 +184,9 @@ class DashboardRoute(models.Model):
         if start_time is None:
             start_time = datetime.now()
 
-        departure = start_time + timedelta(minutes=self.walk_time_start)
-
-        today = departure.date()
+        today = start_time.date()
         tomorrow = today + timedelta(days=1)
-        dt = departure.time()
+        dt = start_time.time()
         dt_int = dt.hour * 3600 + dt.minute * 60 + dt.second
 
         qs = StopTime.objects.filter(trip__route__in=self.routes.all(), stop=self.from_stop, pickup_type=StopTime.PICKUP)

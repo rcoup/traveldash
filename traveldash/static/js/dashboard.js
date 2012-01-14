@@ -88,6 +88,7 @@
                         return (valid_ids.indexOf(this.id) < 0);
                     })
                     .remove();
+                $("#empty").toggle($("tr", td.schedule).length === 0);
                 td.refreshTimes();
             });
         },
@@ -97,11 +98,17 @@
                 var dep = $(this).data('departure');
                 var departs = Date.parse(dep.departs);
                 var deltaMins = -departs.getElapsed() / (60*1000);
-                if (deltaMins < dep.walk_time_start) {
+                if (deltaMins < 0) {
                     $(this).remove();
-                } else {
-                    $(".departsETA", this).text(td.formatDateUntil(departs));
+                    return;
+                }
 
+                $(".departsETA", this).text(td.formatDateUntil(departs));
+                
+                if (deltaMins < dep.walk_time_start) {
+                    $(this).toggleClass("missed", true);
+                    $(this).toggleClass("warning", false);
+                } else {
                     if (Math.ceil(deltaMins) <= td.warning_time) {
                         $(this).toggleClass("warning", true);
                     }
