@@ -111,3 +111,10 @@ footer {
 .dashboard_list .content tr:first-child td {
 	border-top-width: 0;
 }
+
+.home .hero-unit {
+	background-image: url('../img/hero.png');
+	background-repeat: no-repeat;
+	background-position: 60px 50%;
+	padding-left: 176px;
+}
