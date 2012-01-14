@@ -43,6 +43,12 @@
         <h3>Add another route if you need to...</h3>
         {% endif %}
 
+        {% if routeform.non_field_errors %}
+          <div class="alert-message block-message error">
+            {{ routeform.non_field_errors }}
+          </div>
+        {% endif %}
+
         {{ routeform }}
         {{ routeform.id }}
         <script>tdStopInfo["{{routeform.prefix|safe}}"] = {{ routeform.stop_json|safe }};</script>
