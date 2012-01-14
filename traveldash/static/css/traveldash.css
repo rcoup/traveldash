@@ -53,6 +53,7 @@ footer {
 	font-size: 18px;
 	line-height: 23px;
 }
+
 .dashboard_form .delete {
 	float: right;
 }
@@ -62,7 +63,9 @@ footer {
 .dashboard_form form .clearfix::after {
 	clear: left;
 }
-
+.dashboard_form #address-select {
+	margin-top: 15px;
+}
 
 .headLinks {
 	float: right;

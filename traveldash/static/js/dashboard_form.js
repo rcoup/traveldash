@@ -6,6 +6,7 @@ $(function() {
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         center: new google.maps.LatLng(-36.87, 174.76)
     });
+    td.geocoder = new google.maps.Geocoder();
     
     td.stopsLayer = new google.maps.FusionTablesLayer({
         query: {
@@ -80,5 +81,29 @@ $(function() {
         }
         return container;
     });
-    
+   
+    $("#address").keyup(function(event){
+        if(event.keyCode == 13){
+            $("#address-btn").click();
+        }
+    });
+    $('#address-btn').click(function(evt) {
+        var address = $('#address').val();
+        $("#address").toggleClass('error', false);
+        if (!address) {
+            return;
+        }
+        var query = {
+            'address': address,
+            'bounds': td.map.getBounds(),
+            'region': 'nz'
+        };
+        td.geocoder.geocode(query, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                td.map.fitBounds(results[0].geometry.viewport);
+            } else {
+                $("#address").toggleClass('error', true);
+            }
+        });
+    });
 });
