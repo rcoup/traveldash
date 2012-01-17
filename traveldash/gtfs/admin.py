@@ -14,7 +14,8 @@ class ReadOnlyAdminMixin(object):
         return False
 
     def get_readonly_fields(self, request, obj=None):
-        from django.contrib.admin.options import modelform_factory, flatten_fieldsets, curry
+        from django.contrib.admin.options import modelform_factory, flatten_fieldsets
+        from django.utils.functional import curry
 
         if not hasattr(self, "_readonly_fields"):
             if self.declared_fieldsets:
