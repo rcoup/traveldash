@@ -1,6 +1,5 @@
 import time
 import os
-import codecs
 import csv
 import re
 import datetime
@@ -11,20 +10,11 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.loading import get_model
 
+from .utils import UTF8Recoder
+
 
 class GTFSModel(object):
     """ Loading behaviour for GTFS files """
-
-    class UTF8Recoder(object):
-        """ Iterator that reads an encoded stream and reencodes the input to UTF-8 """
-        def __init__(self, f, encoding):
-            self.reader = codecs.getreader(encoding)(f)
-
-        def __iter__(self):
-            return self
-
-        def next(self):
-            return self.reader.next().encode('utf-8')
 
     @classmethod
     def gtfs_load(cls, source, directory):
@@ -38,7 +28,7 @@ class GTFSModel(object):
             try:
                 start_time = time.time()
                 with open(file_path, 'r') as f:
-                    utf8_file = GTFSModel.UTF8Recoder(f, 'utf-8-sig')
+                    utf8_file = UTF8Recoder(f, 'utf-8-sig')
                     reader = csv.DictReader(utf8_file)
 
                     cls.gtfs_truncate(source)
