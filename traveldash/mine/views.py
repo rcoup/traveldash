@@ -12,10 +12,11 @@ from django import forms
 from django.forms.models import inlineformset_factory
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.contrib.gis.utils import GeoIP
 
 from bootstrap.forms import BootstrapModelForm
 
-from traveldash.mine.models import Dashboard, DashboardRoute
+from traveldash.mine.models import Dashboard, DashboardRoute, City
 from traveldash.gtfs.models import Route, Stop
 
 
@@ -140,7 +141,18 @@ def dashboard_create(request):
         else:
             route_formset = RouteFormSet(instance=Dashboard())
     else:
-        form = DashboardForm()
+        # try to find the best city match
+        initial = {}
+        if request.user.dashboards.exists():
+            # Use existing city to start with
+            initial['city'] = request.user.dashboards.all()[0].city
+        else:
+            # try a GeoIP lookup
+            geoip = GeoIP().geos(request.META['REMOTE_ADDR'])
+            if geoip:
+                initial['city'] = City.objects.distance(geoip).order_by('-distance')[0]
+
+        form = DashboardForm(initial=initial)
         route_formset = RouteFormSet(instance=Dashboard())
     return TemplateResponse(request, "mine/dashboard_form.html", {'form': form, 'route_formset': route_formset, 'title': 'New Dashboard', 'stopFusionTableId': settings.GTFS_STOP_FUSION_TABLE_ID})
 

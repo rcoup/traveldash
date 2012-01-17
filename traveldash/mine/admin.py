@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from django.contrib import admin
+from django.contrib.gis import admin
 
-from traveldash.mine.models import Dashboard, DashboardRoute, GTFSSource
+from traveldash.mine.models import Dashboard, DashboardRoute, GTFSSource, City
 
 
 class DashboardRouteInline(admin.StackedInline):
@@ -24,10 +24,10 @@ class DashboardRouteInline(admin.StackedInline):
 
 
 class DashboardAdmin(admin.ModelAdmin):
-    list_display = ('user', 'name', 'created_at',)
-    list_display_links = ('name',)
+    list_display = ('id', 'user', 'city', 'name', 'created_at',)
+    list_display_links = ('id', 'name',)
     search_fields = ('user__first_name', 'user__last_name', 'user__email', 'name',)
-    list_filter = ('created_at',)
+    list_filter = ('created_at', 'city')
     raw_id_fields = ('user',)
     readonly_fields = ('next',)
     inlines = (
@@ -47,12 +47,18 @@ class DashboardAdmin(admin.ModelAdmin):
 
 
 class GTFSSourceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'get_can_autoupdate', 'last_update', 'update_freq',)
+    list_display = ('name', 'city', 'get_can_autoupdate', 'last_update', 'update_freq',)
 
     def get_can_autoupdate(self, obj):
         return obj.can_autoupdate
     get_can_autoupdate.boolean = True
     get_can_autoupdate.short_description = 'Auto-update?'
 
-admin.site.register(Dashboard, DashboardAdmin)
+
+class CityAdmin(admin.GeoModelAdmin):
+    list_display = ('name', 'country')
+
+
+admin.site.register(City, CityAdmin)
 admin.site.register(GTFSSource, GTFSSourceAdmin)
+admin.site.register(Dashboard, DashboardAdmin)

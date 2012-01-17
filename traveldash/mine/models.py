@@ -1,13 +1,31 @@
-from datetime import timedelta, datetime, date
+from datetime import timedelta, datetime
 import urllib2
 
 import lxml.html
-from django.db import models
+from django.contrib.gis.db import models
 from django.db.models import Q, Min
 from django.db.models.signals import post_save, pre_save
-from django.dispatch import receiver
 
 from traveldash.gtfs.models import Route, StopTime, Stop, SourceBase
+
+
+class City(models.Model):
+    name = models.CharField(max_length=100)
+    country = models.CharField(max_length=2, help_text='ISO-3166-2 country code')
+    map_center = models.PointField(geography=True, help_text='Initial map center for selector')
+    map_zoom = models.PositiveIntegerField(default=11, help_text='Initial map zoom level for selector')
+
+    objects = models.GeoManager()
+
+    class Meta:
+        verbose_name_plural = 'Cities'
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+    def save(self, *args, **kwargs):
+        self.country = self.country.lower()
+        return super(City, self).save(*args, **kwargs)
 
 
 class GTFSSourceManager(models.Manager):
@@ -26,6 +44,8 @@ class GTFSSourceManager(models.Manager):
 
 
 class GTFSSource(SourceBase):
+    city = models.ForeignKey(City, related_name='sources')
+
     web_url = models.URLField(blank=True, help_text='Website of the source (for linking)')
 
     zip_url = models.URLField(blank=True, help_text='If a static link to the latest ZIP exists')
@@ -71,6 +91,7 @@ class GTFSSource(SourceBase):
 
 class Dashboard(models.Model):
     user = models.ForeignKey('auth.User', related_name='dashboards')
+    city = models.ForeignKey(City, related_name='dashboards')
     name = models.CharField("Name of your dashboard?", max_length=50)
     warning_time = models.PositiveIntegerField("How much warning do you need?", default=10, help_text="Minutes to alert before departure")
     created_at = models.DateTimeField(auto_now_add=True)
