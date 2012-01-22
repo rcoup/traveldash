@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 import urllib2
 
 import lxml.html
@@ -166,6 +166,9 @@ class Dashboard(models.Model):
     def sources(self):
         return GTFSSource.objects.filter(pk__in=self.routes.values('routes__agency__source__pk').distinct().values_list('routes__agency__source__pk', flat=True))
 
+    def get_alerts(self):
+        return Alert.objects.valid(city=self.city)
+
 
 class DashboardRouteManager(models.Manager):
     def unlink_stops(self):
@@ -269,3 +272,28 @@ class DashboardRoute(models.Model):
 
 pre_save.connect(DashboardRoute.update_stops, sender=DashboardRoute)
 post_save.connect(DashboardRoute.update_routes, sender=DashboardRoute)
+
+
+class AlertManager(models.Manager):
+    def valid(self, city):
+        qs = self.get_query_set().filter(city=city)
+        qs = qs.filter(valid_from__lte=date.today())
+        qs = qs.filter(Q(valid_to__isnull=True) | Q(valid_to__gte=date.today()))
+        return qs
+
+
+class Alert(models.Model):
+    message = models.TextField()
+    city = models.ForeignKey('City', related_name='alerts')
+    valid_from = models.DateField()
+    valid_to = models.DateField(blank=True, null=True)
+
+    objects = AlertManager()
+
+    def __unicode__(self):
+        return unicode(self.message)[:80]
+
+    @property
+    def is_valid(self):
+        return (self.valid_from <= date.today()) \
+            and ((self.valid_to is None) or (self.valid_to >= date.today()))

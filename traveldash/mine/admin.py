@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.contrib.gis import admin
 
-from traveldash.mine.models import Dashboard, DashboardRoute, GTFSSource, City
+from traveldash.mine.models import Dashboard, DashboardRoute, GTFSSource, City, Alert
 
 
 class DashboardRouteInline(admin.StackedInline):
@@ -59,6 +59,16 @@ class CityAdmin(admin.GeoModelAdmin):
     list_display = ('name', 'country')
 
 
+class AlertAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'city', 'get_is_valid', 'valid_from', 'valid_to')
+
+    def get_is_valid(self, obj):
+        return obj.is_valid
+    get_is_valid.boolean = True
+    get_is_valid.short_description = 'Valid?'
+
+
 admin.site.register(City, CityAdmin)
 admin.site.register(GTFSSource, GTFSSourceAdmin)
 admin.site.register(Dashboard, DashboardAdmin)
+admin.site.register(Alert, AlertAdmin)

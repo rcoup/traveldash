@@ -27,6 +27,15 @@
         {% endif %}
       </h1>
     </div>
+    {% with alerts=dashboard.get_alerts %}
+      {% if alerts %}
+        {% for alert in alerts %}
+          <div class="alert-message block-message info in" data-alert="alert">
+            <p>{{ alert.message|safe }}</p>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
     <table>
         <thead>
           <th class="mode">&nbsp;</th>
