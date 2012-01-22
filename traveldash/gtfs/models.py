@@ -9,6 +9,7 @@ from django.contrib.gis import geos
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.loading import get_model
+from django.db.models import Min, Max
 
 from .utils import UTF8Recoder
 
@@ -51,7 +52,9 @@ class GTFSModel(object):
         if 'source' in cls._meta.get_all_field_names():
             cls.objects.filter(source=source).delete()
         else:
-            cls.objects.all().delete()
+            # deletes from the above will cascade, but if we delete these
+            # then we're affecting >1 source
+            pass
 
     @classmethod
     def gtfs_filename(cls):
@@ -415,7 +418,7 @@ class StopTime(models.Model, GTFSModel):
         return dt
 
 
-class Service(models.Model, GTFSModel):
+class Service(models.Model):
     source = models.ForeignKey(settings.GTFS_SOURCE_MODEL, null=True, db_index=True)
     service_id = models.TextField(max_length=20, db_index=True)
 
@@ -544,7 +547,7 @@ class FareRule(models.Model, GTFSModel):
         return ('origin_id', 'destination_id', 'contains_id')
 
 
-class Zone(models.Model, GTFSModel):
+class Zone(models.Model):
     source = models.ForeignKey(settings.GTFS_SOURCE_MODEL, null=True, db_index=True)
     zone_id = models.TextField(max_length=20, db_index=True)
 
@@ -661,3 +664,4 @@ class UniversalCalendar(models.Model):
 
         processing_time = time.time() - start_time
         print '  %d records, %.0f seconds' % (cls.objects.filter(service__source=source).count(), processing_time)
+        print '  from %(date__min)s to %(date__max)s' % cls.objects.filter(service__source=source).aggregate(Min('date'), Max('date'))

@@ -37,9 +37,14 @@ class GTFSSourceManager(models.Manager):
         qs = self.get_query_set()
         qs = qs.extra(where=("(last_update IS NULL) OR (last_update + CAST(textcat(text(update_freq), text(' days')) as interval) <= NOW())",))
         if updateable is True:
-            qs = qs.exclude(zip_url='', page_url='', page_xpath='')
+            qs = qs.exclude(zip_url='', page_xpath='')
         elif updateable is False:
-            qs = qs.filter(zip_url='', page_url='', page_xpath='')
+            qs = qs.filter(zip_url='', page_xpath='')
+        return qs
+
+    def updateable(self):
+        qs = self.get_query_set()
+        qs = qs.exclude(zip_url='', page_xpath='')
         return qs
 
 
@@ -156,16 +161,19 @@ class Dashboard(models.Model):
 
 class DashboardRouteManager(models.Manager):
     def unlink_stops(self):
-        for dr in DashboardRoute.objects.all():
+        for dr in self.get_query_set():
             dr.from_stop = None
             dr.to_stop = None
             dr.save()
 
     def relink_stops(self):
-        for dr in DashboardRoute.objects.all():
+        for dr in self.get_query_set():
             dr.from_stop = Stop.objects.get(code=dr.from_stop_code)
             dr.to_stop = Stop.objects.get(code=dr.to_stop_code)
             dr.save()
+
+    def unlinked_stops(self):
+        return self.get_query_set().filter(Q(from_stop_code__isnull=True) | Q(to_stop_code__isnull=True))
 
 
 class DashboardRoute(models.Model):

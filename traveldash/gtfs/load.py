@@ -42,17 +42,26 @@ def load_zip(zip_file, source):
 def load(temp_dir, source):
     # load GTFS data files & transform/derive additional data
     # due to foreign key constraints these files need to be loaded in the appropriate order
+
+    # these two are pseudo-models which are created during the load process
+    # of other classes. We delete the records upfront.
+    Zone.objects.filter(source=source).delete()
+    Service.objects.filter(source=source).delete()
+
     Agency.gtfs_load(source, temp_dir)
+
+    Stop.gtfs_load(source, temp_dir)
+    Block.gtfs_load(source, temp_dir)
+    Fare.gtfs_load(source, temp_dir)
+    Shape.gtfs_load(source, temp_dir)
+
     Calendar.gtfs_load(source, temp_dir)
     CalendarDate.gtfs_load(source, temp_dir)
     Route.gtfs_load(source, temp_dir)
-    Stop.gtfs_load(source, temp_dir)
     Transfer.gtfs_load(source, temp_dir)
-    Shape.gtfs_load(source, temp_dir)
     Trip.gtfs_load(source, temp_dir)
     StopTime.gtfs_load(source, temp_dir)
     Frequency.gtfs_load(source, temp_dir)
-    Fare.gtfs_load(source, temp_dir)
     FareRule.gtfs_load(source, temp_dir)
 
     # Calculated/Derived stuff
