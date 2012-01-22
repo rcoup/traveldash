@@ -97,7 +97,7 @@ class RouteForm(BootstrapModelForm):
     def clean(self):
         cd = self.cleaned_data
         if ('from_stop' in cd) and ('to_stop' in cd):
-            if not Route.objects.between_stops(cd['from_stop'], cd['to_stop']).count():
+            if not Route.objects.between_stops(cd['from_stop'], cd['to_stop']).exists():
                 raise forms.ValidationError("No Transport routes between the stops you've selected")
         return cd
 
@@ -154,7 +154,15 @@ def dashboard_create(request):
 
         form = DashboardForm(initial=initial)
         route_formset = RouteFormSet(instance=Dashboard())
-    return TemplateResponse(request, "mine/dashboard_form.html", {'form': form, 'route_formset': route_formset, 'title': 'New Dashboard', 'stopFusionTableId': settings.GTFS_STOP_FUSION_TABLE_ID})
+
+    context = {
+        'form': form,
+        'route_formset': route_formset,
+        'title': 'New Dashboard',
+        'stopFusionTableId': settings.GTFS_STOP_FUSION_TABLE_ID,
+        'city_data': json.dumps(City.objects.get_map_info()),
+    }
+    return TemplateResponse(request, "mine/dashboard_form.html", context)
 
 
 @login_required
@@ -183,7 +191,16 @@ def dashboard_edit(request, pk):
     else:
         form = DashboardForm(instance=dashboard)
         route_formset = RouteFormSet(instance=dashboard)
-    return TemplateResponse(request, "mine/dashboard_form.html", {'form': form, 'route_formset': route_formset, 'title': 'Edit Dashboard', 'dashboard': dashboard, 'stopFusionTableId': settings.GTFS_STOP_FUSION_TABLE_ID})
+
+    context = {
+        'form': form,
+        'route_formset': route_formset,
+        'title': 'Edit Dashboard',
+        'dashboard': dashboard,
+        'stopFusionTableId': settings.GTFS_STOP_FUSION_TABLE_ID,
+        'city_data': json.dumps(City.objects.get_map_info()),
+    }
+    return TemplateResponse(request, "mine/dashboard_form.html", context)
 
 
 class DashboardDelete(DeleteView):

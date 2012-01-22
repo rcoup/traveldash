@@ -57,8 +57,13 @@ footer {
 .dashboard_form .delete {
 	float: right;
 }
+.dashboard_form #getstop-modal {
+	width: 760px;
+	max-height: 560px;
+	margin: -350px 0 0 -380px
+}
 .dashboard_form #map {
-	height: 250px;
+	height: 350px;
 }
 .dashboard_form form .clearfix::after {
 	clear: left;

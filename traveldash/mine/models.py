@@ -9,13 +9,21 @@ from django.db.models.signals import post_save, pre_save
 from traveldash.gtfs.models import Route, StopTime, Stop, SourceBase
 
 
+class CityManager(models.GeoManager):
+    def get_map_info(self):
+        r = {}
+        for city in self.get_query_set().all():
+            r[city.pk] = list(city.map_center.tuple) + [city.map_zoom]
+        return r
+
+
 class City(models.Model):
     name = models.CharField(max_length=100)
     country = models.CharField(max_length=2, help_text='ISO-3166-2 country code')
     map_center = models.PointField(geography=True, help_text='Initial map center for selector')
     map_zoom = models.PositiveIntegerField(default=11, help_text='Initial map zoom level for selector')
 
-    objects = models.GeoManager()
+    objects = CityManager()
 
     class Meta:
         verbose_name_plural = 'Cities'
@@ -96,7 +104,7 @@ class GTFSSource(SourceBase):
 
 class Dashboard(models.Model):
     user = models.ForeignKey('auth.User', related_name='dashboards')
-    city = models.ForeignKey(City, related_name='dashboards')
+    city = models.ForeignKey(City, related_name='dashboards', default=lambda: City.objects.all()[0])
     name = models.CharField("Name of your dashboard?", max_length=50)
     warning_time = models.PositiveIntegerField("How much warning do you need?", default=10, help_text="Minutes to alert before departure")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -174,6 +182,13 @@ class DashboardRouteManager(models.Manager):
 
     def unlinked_stops(self):
         return self.get_query_set().filter(Q(from_stop_code__isnull=True) | Q(to_stop_code__isnull=True))
+
+    def no_routes(self):
+        pk_list = []
+        for dr in self.get_query_set():
+            if not Route.objects.between_stops(dr.from_stop, dr.to_stop).exists():
+                pk_list.append(dr.pk)
+        return self.get_query_set.filter(pk__in=pk_list)
 
 
 class DashboardRoute(models.Model):

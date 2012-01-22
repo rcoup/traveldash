@@ -1,10 +1,11 @@
 window.td = window.td || {};
 
 $(function() {
+    var city = td.cities[$("#id_city").val()];
     td.map = new google.maps.Map($("#map")[0], {
-        zoom: 12,
+        zoom: city[2],
         mapTypeId: google.maps.MapTypeId.ROADMAP,
-        center: new google.maps.LatLng(-36.87, 174.76)
+        center: new google.maps.LatLng(city[1], city[0])
     });
     td.geocoder = new google.maps.Geocoder();
     
@@ -35,13 +36,15 @@ $(function() {
     }).bind('show', function() {
         $("#getstop-name").text(currentLabel.text());
         $("#getstop-save").attr('disabled', true);
+
+        var city = td.cities[$("#id_city").val()];
         var sl = currentField.data('stopLocation');
         if (sl) {
-            td.map.setZoom(14);
+            td.map.setZoom(city[2] + 2);
             td.map.setCenter(new google.maps.LatLng(sl[1], sl[0]));
         } else {
-            td.map.setZoom(11);
-            td.map.setCenter(new google.maps.LatLng(-36.87, 174.76));
+            td.map.setZoom(city[2]);
+            td.map.setCenter(new google.maps.LatLng(city[1], city[0]));
         }
     }).bind('shown', function() {
         var z = td.map.getZoom();
