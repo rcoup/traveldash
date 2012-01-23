@@ -1,0 +1,6 @@
+.dashboard #content-metrics tbody th {
+	font-weight: normal;
+}
+.dashboard #content-metrics tbody td {
+	font-weight: bold;
+}

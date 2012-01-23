@@ -1,0 +1,19 @@
+{% extends "admin:admin/index.html" %}
+{% load humanize %}
+
+{% block content %}
+<div id="content-metrics">
+    <div class="module">
+        <table summary="Magic">
+	        <caption>Metrics</caption>
+	        {% for description, value in metrics %}
+            <tr>
+                <th scope="row">{{ description }}</th>
+                <td>{{ value|intcomma }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{{ block.super }}
+{% endblock %}

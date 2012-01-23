@@ -1,8 +1,31 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.contrib.gis import admin
 
 from traveldash.mine.models import Dashboard, DashboardRoute, GTFSSource, City, Alert
+
+
+def get_admin_metrics():
+    from django.contrib.auth.models import User
+    from traveldash.gtfs.models import UniversalCalendar, Route, Stop
+
+    last_week = datetime.now() - timedelta(days=7)
+    metrics = (
+        ('Number of Dashboards', Dashboard.objects.count()),
+        ('Number of Dashboard Routes', DashboardRoute.objects.count()),
+        ('Number of Users', User.objects.count()),
+        ('Last week - Dashboards created', Dashboard.objects.filter(created_at__gte=last_week).count()),
+        ('Last week - Dashboards viewed', Dashboard.objects.filter(last_viewed__gte=last_week).count()),
+        ('Last week - new Users', User.objects.filter(date_joined__gte=last_week).count()),
+        ('Last week - scheduled Services', UniversalCalendar.objects.filter(date__gte=last_week.date()).count()),
+        ('Last week - Source updates', GTFSSource.objects.filter(last_update__gte=last_week).count()),
+        ('Number of service Routes', Route.objects.count()),
+        ('Number of service Stops', Stop.objects.count()),
+        ('Errors - empty Dashboards', Dashboard.objects.filter(routes__isnull=True).count()),
+        ('Errors - unlinked Dashboard Route stops', DashboardRoute.objects.unlinked_stops().count()),
+        ('Errors - Dashboard Routes with no Services', DashboardRoute.objects.no_routes().count()),
+    )
+    return metrics
 
 
 class DashboardRouteInline(admin.StackedInline):
