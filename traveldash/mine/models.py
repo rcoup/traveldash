@@ -110,6 +110,9 @@ class Dashboard(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_viewed = models.DateTimeField(null=True, blank=True, help_text="Last time this dashboard was loaded")
 
+    class Meta:
+        ordering = ('created_at',)
+
     def __unicode__(self):
         return unicode(self.name)
 
