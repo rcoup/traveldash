@@ -108,6 +108,7 @@ class Dashboard(models.Model):
     name = models.CharField("Name of your dashboard?", max_length=50)
     warning_time = models.PositiveIntegerField("How much warning do you need?", default=10, help_text="Minutes to alert before departure")
     created_at = models.DateTimeField(auto_now_add=True)
+    last_viewed = models.DateTimeField(null=True, blank=True, help_text="Last time this dashboard was loaded")
 
     def __unicode__(self):
         return unicode(self.name)
@@ -168,6 +169,10 @@ class Dashboard(models.Model):
 
     def get_alerts(self):
         return Alert.objects.valid(city=self.city)
+
+    def touch(self):
+        self.last_viewed = datetime.now()
+        self.save()
 
 
 class DashboardRouteManager(models.Manager):

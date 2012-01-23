@@ -55,6 +55,8 @@ def dashboard(request, pk):
     except Dashboard.DoesNotExist:
         raise Http404
 
+    dashboard.touch()
+
     context = {
         'dashboard': dashboard,
         'is_owner': (dashboard.user == request.user),
