@@ -124,7 +124,7 @@ RouteFormSet = inlineformset_factory(Dashboard, DashboardRoute, form=RouteForm, 
 class DashboardForm(BootstrapModelForm):
     class Meta:
         model = Dashboard
-        exclude = ('user',)
+        exclude = ('user', 'last_viewed',)
 
 
 @login_required
