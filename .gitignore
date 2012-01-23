@@ -1,0 +1,4 @@
+traveldash/settings.py
+*.pyc
+*.pyo
+traveldash.sublime-*
