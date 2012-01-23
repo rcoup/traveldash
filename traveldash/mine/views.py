@@ -44,10 +44,6 @@ def home(request):
     return TemplateResponse(request, "mine/home.html", {'example_dashboard': example_dashboard})
 
 
-def login(request):
-    return TemplateResponse(request, "login.html")
-
-
 @vary_on_cookie
 def dashboard(request, pk):
     try:
