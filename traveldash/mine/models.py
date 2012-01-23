@@ -191,7 +191,7 @@ class DashboardRouteManager(models.Manager):
         for dr in self.get_query_set():
             if not Route.objects.between_stops(dr.from_stop, dr.to_stop).exists():
                 pk_list.append(dr.pk)
-        return self.get_query_set.filter(pk__in=pk_list)
+        return self.get_query_set().filter(pk__in=pk_list)
 
 
 class DashboardRoute(models.Model):
