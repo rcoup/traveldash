@@ -101,6 +101,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     "django.contrib.messages.context_processors.messages",
     "traveldash.context_processors.google_analytics",
+    "traveldash.context_processors.uservoice",
     "social_auth.context_processors.social_auth_by_type_backends",
 )
 
@@ -155,5 +156,6 @@ GTFS_SOURCE_MODEL = 'mine.GTFSSource'
 GTFS_STOP_FUSION_TABLE_ID = 0
 
 GOOGLE_ANALYTICS_KEY = ''
+USERVOICE_WIDGET = ''
 
 SESSION_COOKIE_AGE = 86400 * 30  # 30 days

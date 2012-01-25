@@ -56,6 +56,13 @@
     <script defer src="{{STATIC_URL}}js/libs/bootstrap-dropdown.js"></script>
     <script defer src="{{STATIC_URL}}js/libs/bootstrap-twipsy.js"></script>
 
+    <!--[if lt IE 7 ]>
+      <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+      <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+    <![endif]-->
+
+    {% block extrabody %}{% endblock %}
+
     {% if GOOGLE_ANALYTICS_KEY %}
     <script>
       window._gaq = [['_setAccount','{{ GOOGLE_ANALYTICS_KEY }}'],['_trackPageview'],['_trackPageLoadTime']];
@@ -64,12 +71,13 @@
       });
     </script>
     {% endif %}
-
-    <!--[if lt IE 7 ]>
-      <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
-      <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
-    <![endif]-->
-
-    {% block extrabody %}{% endblock %}
+    {% if USERVOICE_WIDGET %}
+    <script type="text/javascript">
+      window.uvOptions = {};
+      Modernizr.load({
+        load: '//widget.uservoice.com/{{ USERVOICE_WIDGET }}.js'
+      });
+    </script>
+    {% endif %}
   </body>
 </html>
