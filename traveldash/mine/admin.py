@@ -47,10 +47,10 @@ class DashboardRouteInline(admin.StackedInline):
 
 
 class DashboardAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'city', 'name', 'created_at',)
+    list_display = ('id', 'user', 'city', 'name', 'created_at', 'last_viewed')
     list_display_links = ('id', 'name',)
     search_fields = ('user__first_name', 'user__last_name', 'user__email', 'name',)
-    list_filter = ('created_at', 'city')
+    list_filter = ('created_at', 'city', 'last_viewed')
     raw_id_fields = ('user',)
     readonly_fields = ('next',)
     inlines = (
