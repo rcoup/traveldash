@@ -187,11 +187,17 @@ class DashboardRouteManager(models.Manager):
 
     def relink_stops(self):
         for dr in self.get_query_set():
-            from_stop_ref = dr.from_stop_ref.split(":", 1)
-            dr.from_stop = Stop.objects.get(source__id=int(from_stop_ref[0]), stop_id=from_stop_ref[1])
+            try:
+                from_stop_ref = dr.from_stop_ref.split(":", 1)
+                dr.from_stop = Stop.objects.get(source__id=int(from_stop_ref[0]), stop_id=from_stop_ref[1])
+            except Stop.DoesNotExist:
+                raise Stop.DoesNotExist("DashboardRoute %s, Can't find Stop with source_id=%s, stop_id=%s" % (dr.pk, from_stop_ref[0], repr(from_stop_ref[1])))
 
-            to_stop_ref = dr.to_stop_ref.split(":", 1)
-            dr.to_stop = Stop.objects.get(source__id=int(to_stop_ref[0]), stop_id=to_stop_ref[1])
+            try:
+                to_stop_ref = dr.to_stop_ref.split(":", 1)
+                dr.to_stop = Stop.objects.get(source__id=int(to_stop_ref[0]), stop_id=to_stop_ref[1])
+            except Stop.DoesNotExist:
+                raise Stop.DoesNotExist("DashboardRoute %s, Can't find Stop with source_id=%s, stop_id=%s" % (dr.pk, to_stop_ref[0], repr(to_stop_ref[1])))
 
             dr.save()
 
