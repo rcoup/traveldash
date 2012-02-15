@@ -187,12 +187,16 @@ class DashboardRouteManager(models.Manager):
 
     def relink_stops(self):
         for dr in self.get_query_set():
-            dr.from_stop = Stop.objects.get(code=dr.from_stop_code)
-            dr.to_stop = Stop.objects.get(code=dr.to_stop_code)
+            from_stop_ref = map(int, dr.from_stop_ref.split(":"))
+            dr.from_stop = Stop.objects.get(source_id=from_stop_ref[0], stop_id=from_stop_ref[1])
+
+            to_stop_ref = map(int, dr.to_stop_ref.split(":"))
+            dr.to_stop = Stop.objects.get(source_id=to_stop_ref[0], stop_id=to_stop_ref[1])
+
             dr.save()
 
     def unlinked_stops(self):
-        return self.get_query_set().filter(Q(from_stop_code__isnull=True) | Q(to_stop_code__isnull=True))
+        return self.get_query_set().filter(Q(from_stop_ref='') | Q(to_stop_ref=''))
 
     def no_routes(self):
         pk_list = []
@@ -205,9 +209,9 @@ class DashboardRouteManager(models.Manager):
 class DashboardRoute(models.Model):
     dashboard = models.ForeignKey(Dashboard, related_name='routes')
     name = models.CharField(max_length=50, blank=True)
-    from_stop_code = models.CharField(max_length=20, editable=False)
+    from_stop_ref = models.CharField(help_text='SourceID:stop_id from the GTFS Feed', max_length=50, editable=False, blank=True)
     from_stop = models.ForeignKey('gtfs.Stop', verbose_name='Which stop do you leave from?', related_name='dashboard_routes_start', null=True)
-    to_stop_code = models.CharField(max_length=20, editable=False)
+    to_stop_ref = models.CharField(help_text='SourceID:stop_id from the GTFS Feed', max_length=50, editable=False, blank=True)
     to_stop = models.ForeignKey('gtfs.Stop', verbose_name='Which stop do you go to?', related_name='dashboard_routes_end', null=True)
     routes = models.ManyToManyField('gtfs.Route')
     walk_time_start = models.PositiveIntegerField('How long to walk there?', default=0, help_text='minutes')
@@ -222,10 +226,10 @@ class DashboardRoute(models.Model):
     @classmethod
     def update_stops(cls, sender, instance, **kwargs):
         if instance.from_stop:
-            instance.from_stop_code = instance.from_stop.code
+            instance.from_stop_ref = "%s:%s" % (instance.from_stop.source_id, instance.from_stop.stop_id)
 
         if instance.to_stop:
-            instance.to_stop_code = instance.to_stop.code
+            instance.to_stop_ref = "%s:%s" % (instance.to_stop.source_id, instance.to_stop.stop_id)
 
     @classmethod
     def update_routes(cls, sender, instance, **kwargs):
