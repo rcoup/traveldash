@@ -188,10 +188,10 @@ class DashboardRouteManager(models.Manager):
     def relink_stops(self):
         for dr in self.get_query_set():
             from_stop_ref = map(int, dr.from_stop_ref.split(":"))
-            dr.from_stop = Stop.objects.get(source_id=from_stop_ref[0], stop_id=from_stop_ref[1])
+            dr.from_stop = Stop.objects.get(source__id=from_stop_ref[0], stop_id=from_stop_ref[1])
 
             to_stop_ref = map(int, dr.to_stop_ref.split(":"))
-            dr.to_stop = Stop.objects.get(source_id=to_stop_ref[0], stop_id=to_stop_ref[1])
+            dr.to_stop = Stop.objects.get(source__id=to_stop_ref[0], stop_id=to_stop_ref[1])
 
             dr.save()
 
