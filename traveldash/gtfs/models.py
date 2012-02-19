@@ -3,6 +3,7 @@ import os
 import csv
 import re
 import datetime
+import logging
 
 from django.contrib.gis.db import models
 from django.contrib.gis import geos
@@ -19,11 +20,12 @@ class GTFSModel(object):
 
     @classmethod
     def gtfs_load(cls, source, directory):
-        print "%s..." % cls.__name__
-        print '  %s' % cls.gtfs_filename()
+        L = logging.getLogger('traveldash.gtfs.%s.gtfs_load' % cls.__name__)
+
+        L.info("Beginning load of %s", cls.gtfs_filename())
         file_path = os.path.join(directory, cls.gtfs_filename())
         if not os.path.exists(file_path):
-            print "  not found"
+            L.info("%s not found... skipping", cls.gtfs_filename())
         else:
             cls._gtfs_relation_cache = {}
             try:
@@ -38,11 +40,11 @@ class GTFSModel(object):
                         try:
                             o.save()
                         except:
-                            print "Error processing row:", o.__dict__
+                            L.error("Error processing row: %s", o.__dict__, exc_info=True)
                             raise
 
                 processing_time = time.time() - start_time
-                print '  %d records, %.0f seconds' % (i + 1, processing_time)
+                L.info("%s records, %s seconds", i + 1, int(processing_time))
             finally:
                 del cls._gtfs_relation_cache
 
@@ -644,7 +646,8 @@ class UniversalCalendar(models.Model):
 
     @classmethod
     def gtfs_rebuild(cls, source):
-        print "%s..." % cls.__name__
+        L = logging.getLogger('traveldash.gtfs.%s.gtfs_rebuild' % cls.__name__)
+        L.info("Starting rebuild...")
         start_time = time.time()
 
         # delete old records
@@ -663,5 +666,6 @@ class UniversalCalendar(models.Model):
                     cls.objects.create(service_id=c.service_id, date=d)
 
         processing_time = time.time() - start_time
-        print '  %d records, %.0f seconds' % (cls.objects.filter(service__source=source).count(), processing_time)
-        print '  from %(date__min)s to %(date__max)s' % cls.objects.filter(service__source=source).aggregate(Min('date'), Max('date'))
+        L.info('%s records, %s seconds', cls.objects.filter(service__source=source).count(), int(processing_time))
+        date_range = cls.objects.filter(service__source=source).aggregate(Min('date'), Max('date'))
+        L.info("Date Range: %s -> %s", date_range['date__min'], date_range['date__max'])

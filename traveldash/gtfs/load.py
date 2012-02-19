@@ -3,11 +3,14 @@
 import tempfile
 import shutil
 import zipfile
+import logging
 from optparse import OptionParser
 
 from django.db import transaction
 
 from traveldash.gtfs.models import *
+
+L = logging.getLogger("traveldash.gtfs.load")
 
 
 def main():
@@ -30,7 +33,7 @@ def main():
 def load_zip(zip_file, source):
     temp_dir = tempfile.mkdtemp()
     try:
-        print('Extracting %s...' % zip_file)
+        L.info('Extracting %s...', zip_file)
         zip = zipfile.ZipFile(open(zip_file, 'rb'))
         zip.extractall(temp_dir)
 

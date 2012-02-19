@@ -4,6 +4,7 @@ import urllib
 import urllib2
 import tempfile
 from datetime import datetime
+import logging
 
 from django.core.management.base import BaseCommand, make_option, CommandError
 from django.db import transaction
@@ -13,6 +14,8 @@ from traveldash.mine.models import GTFSSource, Dashboard
 
 
 class Command(BaseCommand):
+    L = logging.getLogger("traveldash.mine.gtfs_update")
+
     help = "Updates GTFS data. Specify either --all, --auto, --google-fusion-only, or a specific source/zip"
     args = "[SOURCE_ID [ZIP]]"
     option_list = BaseCommand.option_list + (
@@ -36,6 +39,15 @@ class Command(BaseCommand):
                 or (sum([options['all'], options['auto'], options['google_fusion']]) == 0 and not len(args)):
             raise CommandError("Invalid combination of options")
 
+        # configure logging output
+        if options['verbosity'] == '0':
+            log_level = logging.WARNING
+        elif options['verbosity'] == '1':
+            log_level = logging.INFO
+        else:
+            log_level = logging.DEBUG
+        logging.basicConfig(stream=self.stderr, level=log_level, format="%(relativeCreated)s %(name)s[%(levelname)s]: %(message)s")
+
         if options['google_fusion']:
             self.update_fusion_tables()
             return
@@ -54,7 +66,7 @@ class Command(BaseCommand):
             if len(args) > 1:
                 zip_file = args[1]
                 if not os.path.exists(args[1]):
-                    raise CommandError("zip file not found")
+                    raise CommandError("ZIP file not found")
                 sources = [(source, zip_file)]
             else:
                 qs = [source]
@@ -67,7 +79,7 @@ class Command(BaseCommand):
                 qs = GTFSSource.objects.need_update()
 
             if not qs:
-                print "No sources to update"
+                self.L.info("No sources to update")
                 return
 
         if qs:
@@ -80,40 +92,41 @@ class Command(BaseCommand):
         self.update_models(sources)
         self.update_fusion_tables()
 
-        print "All done :)"
+        self.L.info("All done :)")
 
     @transaction.commit_on_success
     def update_models(self, source_info):
         from traveldash.mine.models import DashboardRoute
         from traveldash.gtfs import load
 
-        print "Unlinking dashboard stops..."
+        self.L.info("Unlinking dashboard stops...")
         DashboardRoute.objects.unlink_stops()
 
         # do the load
         for source, zip_file in source_info:
-            print "Updating source %s from %s ..." % (source, zip_file)
+            self.L.info("Updating source %s from %s ...", source, zip_file)
             load.load_zip(zip_file, source)
             source.last_update = datetime.now()
             source.save()
 
-        print "Re-linking dashboard stops..."
-        DashboardRoute.objects.relink_stops()
+        self.L.info("Re-linking dashboard stops...")
+        errors = DashboardRoute.objects.relink_stops(ignore_errors=True)
+        if len(errors):
+            self.L.error("ERRORS RELINKING STOPS:\n%s", "\n".join(map(str, errors)))
 
         unlinked = DashboardRoute.objects.unlinked_stops()
         if len(unlinked):
-            print "WARNING: UNLINKED DASHBOARDS"
-            for d in Dashboard.objects.filter(pk__in=unlinked.values_list('dashboard__id')):
-                print d.id, d
+            pk_list = Dashboard.objects.filter(pk__in=unlinked.values_list('dashboard__id')).values_list('pk', flat=True)
+            self.L.warning("WARNING: UNLINKED DASHBOARDS: %s", pk_list)
 
     def update_fusion_tables(self):
         from traveldash.gtfs.models import Stop
 
-        print "Updating Google Fusion Tables..."
+        self.L.info("Updating Google Fusion Tables...")
 
         user_auth_file = os.path.expanduser('~/.traveldash_auth')
         if os.path.exists(user_auth_file):
-            print "Using credentials from %s" % user_auth_file
+            self.L.info("Using credentials from %s" % user_auth_file)
             with open(user_auth_file) as fa:
                 g_username, g_password = fa.readline().strip().split(':', 1)
         else:
@@ -127,7 +140,7 @@ class Command(BaseCommand):
             'service': 'fusiontables',
             'source': 'traveldash.org-backend-0.1',
         }
-        print "Logging in..."
+        self.L.info("Logging in...")
         for line in urllib2.urlopen('https://www.google.com/accounts/ClientLogin', urllib.urlencode(req)):
             if line.startswith('Auth='):
                 g_auth = line[5:].strip()
@@ -135,32 +148,33 @@ class Command(BaseCommand):
         else:
             raise CommandError("Didn't get auth token from Google")
 
-        print "Generating data...",
+        self.L.info("Generating data...",)
         inserts = []
         for id, name, location in Stop.objects.get_fusion_tables_rows():
             inserts.append("INSERT INTO %s (id, name, location) VALUES (%s, '%s', '%s');" % (settings.GTFS_STOP_FUSION_TABLE_ID, id, name.replace("'", "\\'"), location))
-        print len(inserts)
+        self.L.info("%s rows to insert", len(inserts))
 
-        print "Truncating table..."
+        self.L.info("Truncating table...")
         req_data = {
             'sql': 'DELETE FROM %s' % settings.GTFS_STOP_FUSION_TABLE_ID,
         }
         req = urllib2.Request("https://www.google.com/fusiontables/api/query", urllib.urlencode(req_data), headers={'Authorization': 'GoogleLogin auth=%s' % g_auth})
         urllib2.urlopen(req)
 
-        print "Adding new rows..."
+        self.L.info("Adding new rows...")
         for j, chunk in enumerate([inserts[i: i + 500] for i in range(0, len(inserts), 500)]):
-            print "  %d-%d..." % (j * 500 + 1, (j + 1) * 500)
+            self.L.info("  %d-%d..." % (j * 500 + 1, (j + 1) * 500))
             req_data = {
                 'sql': '\n'.join(chunk),
             }
             req = urllib2.Request("https://www.google.com/fusiontables/api/query", urllib.urlencode(req_data), headers={'Authorization': 'GoogleLogin auth=%s' % g_auth})
             try:
                 urllib2.urlopen(req)
-            except urllib2.HTTPError, e:
-                print "GFT Error: %s\nInsert Data:\n" % e
+            except urllib2.HTTPError:
+                sql_data = []
                 for i, line in enumerate(req_data['sql'].split('\n')):
-                    print '%d\t%s' % (i, line)
+                    sql_data.append('%d\t%s' % (i, line))
+                self.L.error("GFT Error: Insert Data:\n", "\n".join(sql_data), exc_info=True)
                 raise
 
-        print "All done :)"
+        self.L.info("All done :)")
