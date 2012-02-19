@@ -185,21 +185,32 @@ class DashboardRouteManager(models.Manager):
             dr.to_stop = None
             dr.save()
 
-    def relink_stops(self):
+    def relink_stops(self, ignore_errors=False):
+        errors = []
         for dr in self.get_query_set():
             try:
                 from_stop_ref = dr.from_stop_ref.split(":", 1)
                 dr.from_stop = Stop.objects.get(source__id=int(from_stop_ref[0]), stop_id=from_stop_ref[1])
             except Stop.DoesNotExist:
-                raise Stop.DoesNotExist("DashboardRoute %s, Can't find Stop with source_id=%s, stop_id=%s" % (dr.pk, from_stop_ref[0], repr(from_stop_ref[1])))
+                e = Stop.DoesNotExist("DashboardRoute %s, Can't find Stop with source_id=%s, stop_id=%s" % (dr.pk, from_stop_ref[0], repr(from_stop_ref[1])))
+                if ignore_errors and dr.from_stop_ref:
+                    errors.append(e)
+                else:
+                    raise e
 
             try:
                 to_stop_ref = dr.to_stop_ref.split(":", 1)
                 dr.to_stop = Stop.objects.get(source__id=int(to_stop_ref[0]), stop_id=to_stop_ref[1])
             except Stop.DoesNotExist:
-                raise Stop.DoesNotExist("DashboardRoute %s, Can't find Stop with source_id=%s, stop_id=%s" % (dr.pk, to_stop_ref[0], repr(to_stop_ref[1])))
+                e = Stop.DoesNotExist("DashboardRoute %s, Can't find Stop with source_id=%s, stop_id=%s" % (dr.pk, to_stop_ref[0], repr(to_stop_ref[1])))
+                if ignore_errors and dr.to_stop_ref:
+                    errors.append(e)
+                else:
+                    raise e
 
             dr.save()
+
+        return errors
 
     def unlinked_stops(self):
         return self.get_query_set().filter(Q(from_stop_ref='') | Q(to_stop_ref=''))
