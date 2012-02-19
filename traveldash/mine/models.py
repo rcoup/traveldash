@@ -139,7 +139,7 @@ class Dashboard(models.Model):
         c = {
             "name": self.name,
             "warning_time": self.warning_time,
-            "routes": dict([(route.id, route.as_json()) for route in self.routes.all()]),
+            "routes": dict([(route.id, route.as_json()) for route in self.routes.all() if route.has_routes]),
         }
         c.update(self.json_update())
         return c
@@ -209,6 +209,7 @@ class DashboardRouteManager(models.Manager):
                     raise e
 
             dr.save()
+            dr.update_routes()
 
         return errors
 
@@ -241,19 +242,25 @@ class DashboardRoute(models.Model):
         return unicode(self.name)
 
     @classmethod
-    def update_stops(cls, sender, instance, **kwargs):
-        if instance.from_stop:
-            instance.from_stop_ref = "%s:%s" % (instance.from_stop.source_id, instance.from_stop.stop_id)
-
-        if instance.to_stop:
-            instance.to_stop_ref = "%s:%s" % (instance.to_stop.source_id, instance.to_stop.stop_id)
+    def signal_update_stops(cls, sender, instance, **kwargs):
+        instance.update_stops()
 
     @classmethod
-    def update_routes(cls, sender, instance, **kwargs):
-        if instance.from_stop and instance.to_stop:
-            instance.routes = Route.objects.between_stops(instance.from_stop, instance.to_stop)
+    def signal_update_routes(cls, sender, instance, **kwargs):
+        instance.update_routes()
+
+    def update_stops(self):
+        if self.from_stop:
+            self.from_stop_ref = "%s:%s" % (self.from_stop.source_id, self.from_stop.stop_id)
+
+        if self.to_stop:
+            self.to_stop_ref = "%s:%s" % (self.to_stop.source_id, self.to_stop.stop_id)
+
+    def update_routes(self):
+        if self.from_stop and self.to_stop:
+            self.routes = Route.objects.between_stops(self.from_stop, self.to_stop)
         else:
-            instance.routes.clear()
+            self.routes.clear()
 
     def next(self, start_time=None, count=10):
         """ Get the next Trips departing for this route """
@@ -282,6 +289,10 @@ class DashboardRoute(models.Model):
             arr_st = trip.stop_times.filter(stop=self.to_stop, drop_off_type=StopTime.DROPOFF)[0]
             arr = arr_st.arriving(service_date)
             yield (trip, departing, arr)
+
+    @property
+    def has_routes(self):
+        return bool(self.routes.count())
 
     def as_json(self):
         c = {
