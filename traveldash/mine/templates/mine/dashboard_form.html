@@ -63,6 +63,8 @@
         <button type="submit" class="btn primary">Save</button>
         {% if dashboard %}
         <a href="{{ dashboard.get_absolute_url }}" class="btn">Cancel</a>
+        {% else %}
+        <span>Need to add more routes? Save the dashboard, then click Edit again.</span>
         {% endif %}
       </div>
     </form>
