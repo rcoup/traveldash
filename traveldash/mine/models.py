@@ -310,8 +310,8 @@ class DashboardRoute(models.Model):
         }
         return c
 
-pre_save.connect(DashboardRoute.update_stops, sender=DashboardRoute)
-post_save.connect(DashboardRoute.update_routes, sender=DashboardRoute)
+pre_save.connect(DashboardRoute.signal_update_stops, sender=DashboardRoute)
+post_save.connect(DashboardRoute.signal_update_routes, sender=DashboardRoute)
 
 
 class AlertManager(models.Manager):
