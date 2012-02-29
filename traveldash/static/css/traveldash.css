@@ -78,7 +78,8 @@ footer {
 }
 
 .twitterBtn,
-.facebookBtn {
+.facebookBtn,
+.googleBtn {
 	padding-left: 27px;
 	background-repeat: no-repeat;
 	background-position: 0 50%;
@@ -88,6 +89,9 @@ footer {
 }
 .facebookBtn {
 	background-image: url('../img/facebook.png');
+}
+.googleBtn {
+	background-image: url('../img/google.png');
 }
 
 #menu .profile {
