@@ -48,12 +48,12 @@ class GTFSSourceManager(models.Manager):
             qs = qs.exclude(zip_url='', page_xpath='')
         elif updateable is False:
             qs = qs.filter(zip_url='', page_xpath='')
-        return qs
+        return qs.order_by('?')
 
     def updateable(self):
         qs = self.get_query_set()
         qs = qs.exclude(zip_url='', page_xpath='')
-        return qs
+        return qs.order_by('?')
 
 
 class GTFSSource(SourceBase):

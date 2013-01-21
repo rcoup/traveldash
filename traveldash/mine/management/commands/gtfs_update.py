@@ -5,6 +5,7 @@ import urllib2
 import tempfile
 from datetime import datetime
 import logging
+import time
 
 from django.core.management.base import BaseCommand, make_option, CommandError
 from django.db import transaction
@@ -160,6 +161,9 @@ class Command(BaseCommand):
         }
         req = urllib2.Request("https://www.google.com/fusiontables/api/query", urllib.urlencode(req_data), headers={'Authorization': 'GoogleLogin auth=%s' % g_auth})
         urllib2.urlopen(req)
+
+        self.L.info("Sleeping for 15 seconds...")
+        time.sleep(15)
 
         self.L.info("Adding new rows...")
         for j, chunk in enumerate([inserts[i: i + 500] for i in range(0, len(inserts), 500)]):
