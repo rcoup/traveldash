@@ -11,6 +11,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.loading import get_model
 from django.db.models import Min, Max
+from django.db.models.fields import NOT_PROVIDED
 
 from .utils import UTF8Recoder
 
@@ -118,7 +119,10 @@ class GTFSModel(object):
                 # dumb prefix
                 kk = k.split('_', 1)[1]
                 if kk in cls._meta.get_all_field_names():
-                    setattr(o, kk, v or cls._meta.get_field_by_name(kk)[0].default)
+                    v_default = cls._meta.get_field_by_name(kk)[0].default
+                    if (not v) and (v_default != NOT_PROVIDED):
+                        v = v_default
+                    setattr(o, kk, v)
                     matched.append(k)
 
         matched += cls.gtfs_populate(o, row, source)
@@ -137,7 +141,8 @@ class GTFSModel(object):
 
     @classmethod
     def gtfs_parse_hms(cls, v):
-        if v == '': return None
+        if v == '':
+            return None
         h, m, s = map(int, v.split(':'))
         return h * 3600 + m * 60 + s
 
@@ -193,10 +198,10 @@ class Agency(models.Model, GTFSModel):
     source = models.ForeignKey(settings.GTFS_SOURCE_MODEL, null=True, db_index=True)
     agency_id = models.CharField(max_length=20, db_index=True)
     name = models.TextField()
-    url = models.URLField()
+    url = models.URLField(blank=True)
     timezone = models.CharField(max_length=40)
     lang = models.CharField(max_length=2)
-    phone = models.CharField(max_length=20)
+    phone = models.CharField(max_length=20, blank=True)
 
     class Meta:
         verbose_name_plural = "Agencies"

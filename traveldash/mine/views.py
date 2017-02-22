@@ -40,7 +40,10 @@ def home(request):
                     pass
             return HttpResponseRedirect(redirect)
 
-    example_dashboard = Dashboard.objects.exclude(routes__isnull=True).order_by('?')[0]
+    for example_dashboard in Dashboard.objects.exclude(routes__isnull=True).order_by('?')[:10]:
+        # FIXME: need some better crude check to find a dashboard with stuff in
+        if example_dashboard.next():
+            break
     return TemplateResponse(request, "mine/home.html", {'example_dashboard': example_dashboard})
 
 

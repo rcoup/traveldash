@@ -11,7 +11,7 @@
 <script defer src="{{STATIC_URL}}js/libs/bootstrap-modal.js"></script>
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;region=NZ"></script>
 <script type="text/javascript" src="{{STATIC_URL}}js/dashboard_form.js"></script>
-<script type="text/javascript">td.stopfusionTableId = {{ stopFusionTableId }};</script>
+<script type="text/javascript">td.stopfusionTableId = '{{ stopFusionTableId }}';</script>
 <script type="text/javascript">td.cities = {{ city_data|safe }};</script>
 {% endblock %}
 
@@ -58,7 +58,7 @@
 
       <div class="actions">
         {% if dashboard %}
-        <a href="{% url dashboard-delete dashboard.pk %}" class="delete btn danger">Delete this Dashboard</a>
+        <a href="{% url 'dashboard-delete' dashboard.pk %}" class="delete btn danger">Delete this Dashboard</a>
         {% endif %}
         <button type="submit" class="btn primary">Save</button>
         {% if dashboard %}

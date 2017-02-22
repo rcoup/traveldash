@@ -7,6 +7,7 @@ from datetime import datetime
 import logging
 import time
 
+import requests
 from django.core.management.base import BaseCommand, make_option, CommandError
 from django.db import transaction
 from django.conf import settings
@@ -121,33 +122,32 @@ class Command(BaseCommand):
             self.L.warning("WARNING: UNLINKED DASHBOARDS: %s", pk_list)
 
     def update_fusion_tables(self):
+        import httplib2
+        from apiclient.discovery import build
+        from oauth2client.client import SignedJwtAssertionCredentials
+
         from traveldash.gtfs.models import Stop
+
+        FUSION_BASE_URL = "https://www.googleapis.com/fusiontables/v1"
 
         self.L.info("Updating Google Fusion Tables...")
 
-        user_auth_file = os.path.expanduser('~/.traveldash_auth')
-        if os.path.exists(user_auth_file):
-            self.L.info("Using credentials from %s" % user_auth_file)
-            with open(user_auth_file) as fa:
-                g_username, g_password = fa.readline().strip().split(':', 1)
-        else:
-            g_username = raw_input('Google Account Email: ')
-            g_password = getpass.getpass('Password: ')
+        user_auth_file = os.path.expanduser('~/.traveldash_auth.p12')
+        with open(user_auth_file, 'rb') as f:
+            key = f.read()
 
-        req = {
-            'Email': g_username,
-            'Passwd': g_password,
-            'accountType': 'HOSTED_OR_GOOGLE',
-            'service': 'fusiontables',
-            'source': 'traveldash.org-backend-0.1',
+        #FUSION_TABLES_API_EMAIL = '425751465297-lmvpl2m4luql9p630lfta55vcvbq52ad@developer.gserviceaccount.com'
+        FUSION_TABLES_API_EMAIL = '1010325034106-jdop1gjin0n75hkomdjc3mksir3e3l57@developer.gserviceaccount.com'
+        credentials = SignedJwtAssertionCredentials(FUSION_TABLES_API_EMAIL,
+                                                    key,
+                                                    scope='https://www.googleapis.com/auth/fusiontables')
+        http = httplib2.Http()
+        credentials.authorize(http)
+        # service = build("fusiontables", "v1", http=http)
+
+        headers = {
+            'Authorization': 'Bearer %s' % credentials.access_token,
         }
-        self.L.info("Logging in...")
-        for line in urllib2.urlopen('https://www.google.com/accounts/ClientLogin', urllib.urlencode(req)):
-            if line.startswith('Auth='):
-                g_auth = line[5:].strip()
-                break
-        else:
-            raise CommandError("Didn't get auth token from Google")
 
         self.L.info("Generating data...",)
         inserts = []
@@ -155,30 +155,35 @@ class Command(BaseCommand):
             inserts.append("INSERT INTO %s (id, name, location) VALUES (%s, '%s', '%s');" % (settings.GTFS_STOP_FUSION_TABLE_ID, id, name.replace("'", "\\'"), location))
         self.L.info("%s rows to insert", len(inserts))
 
-        self.L.info("Truncating table...")
-        req_data = {
-            'sql': 'DELETE FROM %s' % settings.GTFS_STOP_FUSION_TABLE_ID,
-        }
-        req = urllib2.Request("https://www.google.com/fusiontables/api/query", urllib.urlencode(req_data), headers={'Authorization': 'GoogleLogin auth=%s' % g_auth})
-        urllib2.urlopen(req)
+        # self.L.info("Truncating table...")
+        # req_data = {
+        #     'sql': 'DELETE FROM %s;' % settings.GTFS_STOP_FUSION_TABLE_ID
+        # }
+        # r = requests.post(FUSION_BASE_URL + "/query", data=req_data, headers=headers)
+        # self.L.debug(r.text)
+        # r.raise_for_status()
 
-        self.L.info("Sleeping for 15 seconds...")
-        time.sleep(15)
+        # self.L.info("Sleeping for 15 seconds...")
+        # time.sleep(15)
 
         self.L.info("Adding new rows...")
-        for j, chunk in enumerate([inserts[i: i + 500] for i in range(0, len(inserts), 500)]):
-            self.L.info("  %d-%d..." % (j * 500 + 1, (j + 1) * 500))
+        N = 10
+        for j, chunk in enumerate([inserts[i: i + N] for i in range(0, len(inserts), N)]):
+            self.L.info("  %d-%d..." % (j * N + 1, (j + 1) * N))
             req_data = {
                 'sql': '\n'.join(chunk),
             }
-            req = urllib2.Request("https://www.google.com/fusiontables/api/query", urllib.urlencode(req_data), headers={'Authorization': 'GoogleLogin auth=%s' % g_auth})
             try:
-                urllib2.urlopen(req)
-            except urllib2.HTTPError:
+                #r = requests.post(FUSION_BASE_URL + "/query?key=%s" % FUSION_TABLES_KEY, data=req_data)
+                r = requests.post(FUSION_BASE_URL + "/query", data=req_data, headers=headers)
+                # print(service.query().sql(sql=req_data['sql']).execute())
+                self.L.debug(r.text)
+                r.raise_for_status()
+            except (requests.HTTPError, requests.exceptions.RequestException):
                 sql_data = []
                 for i, line in enumerate(req_data['sql'].split('\n')):
                     sql_data.append('%d\t%s' % (i, line))
-                self.L.error("GFT Error: Insert Data:\n", "\n".join(sql_data), exc_info=True)
+                self.L.error("GFT Error: Insert Data:\n%s", "\n".join(sql_data), exc_info=True)
                 raise
 
         self.L.info("All done :)")

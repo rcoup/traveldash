@@ -10,10 +10,10 @@
     </div>
     <p>Use your Twitter, Facebook, or Google account to sign in and build your dashboards. No spam, ever.</p>
     <p>
-    	<a href="{% url socialauth_begin backend='twitter' %}" class="btn large"><span class="twitterBtn">Twitter</span></a>
+    	<a href="{% url 'socialauth_begin' backend='twitter' %}" class="btn large"><span class="twitterBtn">Twitter</span></a>
     	&nbsp;
-    	<a href="{% url socialauth_begin backend='facebook' %}" class="btn large"><span class="facebookBtn">Facebook</span></a>
-        <a href="{% url socialauth_begin backend='google-oauth' %}" class="btn large"><span class="googleBtn">Google</span></a>
+    	<a href="{% url 'socialauth_begin' backend='facebook' %}" class="btn large"><span class="facebookBtn">Facebook</span></a>
+        <a href="{% url 'socialauth_begin' backend='google-oauth' %}" class="btn large"><span class="googleBtn">Google</span></a>
         &nbsp;
     </p>
 {% endblock %}

@@ -9,14 +9,18 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         """Update the GTFS source=null models to point to a GTFSSource instance."""
-        source = orm['mine.GTFSSource'].objects.get(pk=1)
-        orm['gtfs.Agency'].objects.filter(source__isnull=True).update(source=source)
-        orm['gtfs.Stop'].objects.filter(source__isnull=True).update(source=source)
-        orm['gtfs.Block'].objects.filter(source__isnull=True).update(source=source)
-        orm['gtfs.Service'].objects.filter(source__isnull=True).update(source=source)
-        orm['gtfs.Fare'].objects.filter(source__isnull=True).update(source=source)
-        orm['gtfs.Zone'].objects.filter(source__isnull=True).update(source=source)
-        orm['gtfs.Shape'].objects.filter(source__isnull=True).update(source=source)
+        try:
+            source = orm['mine.GTFSSource'].objects.get(pk=1)
+        except:
+            pass
+        else:
+            orm['gtfs.Agency'].objects.filter(source__isnull=True).update(source=source)
+            orm['gtfs.Stop'].objects.filter(source__isnull=True).update(source=source)
+            orm['gtfs.Block'].objects.filter(source__isnull=True).update(source=source)
+            orm['gtfs.Service'].objects.filter(source__isnull=True).update(source=source)
+            orm['gtfs.Fare'].objects.filter(source__isnull=True).update(source=source)
+            orm['gtfs.Zone'].objects.filter(source__isnull=True).update(source=source)
+            orm['gtfs.Shape'].objects.filter(source__isnull=True).update(source=source)
 
     def backwards(self, orm):
         "Write your backwards methods here."
